@@ -23,12 +23,6 @@ const hasCover = !!f.index_img;
 const coverAlt = hasCover
   ? f.index_img!.split("/").pop()!.replace(/\.[^.]+$/, "")
   : "";
-const titleColor = hasCover
-  ? "text-white drop-shadow-sm group-has-checked:text-base-content group-has-checked:drop-shadow-none transition-colors duration-300 ease-out"
-  : "text-base-content";
-const dateColor = hasCover
-  ? "text-white/80 group-has-checked:text-base-content/60 transition-colors duration-300 ease-out"
-  : "";
 ---
 
 <style>
@@ -40,29 +34,11 @@ const dateColor = hasCover
 </style>
 
 <article class="card bg-card smooth-border postcard-card
-                min-h-60 max-h-60 has-checked:max-h-[80rem] relative flex flex-col group
-                transition-[max-height] duration-300 ease-out overflow-clip" id={slug}>
-  <!-- 封面：文档流顶部，收拢时 max-h-60 裁剪铺满整卡，展开时 group-has-checked 放开按原始比例完整显示 -->
-  {
-    hasCover && (
-      <div class="shrink-0 overflow-hidden max-h-60 group-has-checked:max-h-[80rem]
-                  transition-[max-height] duration-300 ease-out relative">
-        <Image
-          inferSize
-          src={f.index_img!}
-          alt={coverAlt}
-          class="w-full h-auto block object-top"
-        />
-        {/* 顶部暗化衬标题，底部渐变消隐到卡片底色；展开时整体淡出，图片完整展示 */}
-        <div class="absolute inset-0 bg-linear-to-b from-black/50 via-black/15 to-base-100
-                    opacity-100 group-has-checked:opacity-0 transition-opacity duration-300 ease-out" />
-      </div>
-    )
-  }
-  <div class={`p-5 text-xs text-base-content/60 flex flex-col relative z-10
-               min-h-60
-               transition-[margin-top] duration-300 ease-out
-               ${hasCover ? "-mt-60 group-has-checked:mt-0" : ""}`}>
+                min-h-60 max-h-60 has-checked:max-h-320
+                relative flex flex-col group
+                transition-[max-height] overflow-clip" id={slug}>
+  <!-- 内容：始终在卡片顶部，flex-1 撑满收起时的 240px，z-10 浮在封面上 -->
+  <div class="p-5 text-xs text-base-content/60 flex-1 min-h-60 flex flex-col relative z-10">
     {
       f.status && (
         <div class="flex items-baseline gap-2 font-mono font-bold text-xs">
@@ -87,10 +63,10 @@ const dateColor = hasCover
       )
     }
 
-    {f.title && <h2 class={`text-xl font-bold leading-tight mt-2 ${titleColor}`}>
-      <a href={"#" + slug} class="z-10">{f.title}</a>
+    {f.title && <h2 class="text-xl text-base-content font-bold leading-tight mt-2">
+      <a href={"#" + slug}>{f.title}</a>
     </h2>}
-    {f.date && <div class={`mt-1.5 ${dateColor}`}>{f.date}</div>}
+    {f.date && <div class="mt-1.5">{f.date}</div>}
 
     <Collapse>
       <div class="mt-2.5 prose prose-slate prose-sm">
@@ -110,7 +86,7 @@ const dateColor = hasCover
 
     <!-- 一排 icon：右侧 mask 渐变消隐，溢出时在 repo/live 按钮前自然淡出 -->
     <div class="flex items-center gap-3 mt-3 *:shrink-0 overflow-clip not-has-[*]:hidden shrink-0
-                [mask-image:linear-gradient(to_right,black,black_calc(100%_-_120px),transparent)]">
+                mask-[linear-gradient(to_right,black,black_calc(100%-120px),transparent)]">
       {
         repo && (
           <span title="Stars">
@@ -136,7 +112,6 @@ const dateColor = hasCover
       {
         repo?.license && (
           <a title="License"
-            class="z-10"
             href={`${f.repo}/blob/${repo.defaultBranch}/LICENSE`}
             target="_blank"
             rel="noopener">
@@ -199,6 +174,23 @@ const dateColor = hasCover
       target="_blank"
       rel="noopener"/> -->
   </div>
+  <!-- 封面：在内容之后流内，收起时 -mt-60 上拉覆盖整卡作为背景，展开时 mt-0 自然下移到内容下方 -->
+  {
+    hasCover && (
+      <div class="relative
+                  -mt-60 group-has-checked:mt-0
+                  transition-[margin-top] ease-out">
+        <Image
+          inferSize
+          src={f.index_img!}
+          alt={coverAlt}
+          class="w-full h-auto block"
+        />
+        <div class="absolute inset-0 bg-base-100/30
+                    opacity-100 group-has-checked:opacity-0 transition-opacity" />
+      </div>
+    )
+  }
 </article>
 
 <style is:global>

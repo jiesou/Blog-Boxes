@@ -5,7 +5,7 @@
 -->
 <style is:global>
   @property --fade {
-    syntax: '<length>';
+    syntax: "<length>";
     inherits: false;
     initial-value: 0px;
   }
@@ -13,10 +13,12 @@
 <div class="group relative flex-1 min-h-0 flex flex-col">
   <!-- 内容区：撑满裁剪窗口，底部 mask 渐变消隐。
        收起 --fade=48px 在窗口底部遮裁断处；展开 --fade=0 消隐淡出。 -->
-  <div class="relative overflow-hidden flex-1 min-h-0
+  <div
+    class="relative overflow-hidden flex-1 min-h-0
               [--fade:48px] group-has-checked:[--fade:0px]
-              [mask-image:linear-gradient(to_bottom,black_calc(100%_-_var(--fade)),transparent)]
-              transition-[--fade] duration-300 ease-out">
+              mask-[linear-gradient(to_bottom,black_calc(100%-var(--fade)),transparent)]
+              transition-[--fade] duration-300 ease-out"
+  >
     <slot />
   </div>
 
@@ -35,7 +37,9 @@
       </span>
       <span class="swap-off">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12.5 11.5H19V12.5H12.5V19H11.5V12.5H5V11.5H11.5V5H12.5V11.5Z" fill="currentColor"></path>
+          <path
+            d="M12.5 11.5H19V12.5H12.5V19H11.5V12.5H5V11.5H11.5V5H12.5V11.5Z"
+            fill="currentColor"></path>
         </svg>
       </span>
     </span>
