@@ -2,6 +2,7 @@
 import IconLink from "./IconLink.astro";
 import Collapse from "./Collapse.astro";
 import type { Repo, Post } from "../types";
+import Image from "astro/components/Image.astro";
 
 interface Props {
   post: Post;
@@ -18,6 +19,16 @@ const langs =
   repo?.languages
     ?.map((l) => ({ ...l, pct: (l.bytes / total) * 100 }))
     .filter((l) => l.pct >= 1) ?? [];
+const hasCover = !!f.index_img;
+const coverAlt = hasCover
+  ? f.index_img!.split("/").pop()!.replace(/\.[^.]+$/, "")
+  : "";
+const titleColor = hasCover
+  ? "text-white drop-shadow-sm group-has-checked:text-base-content group-has-checked:drop-shadow-none transition-colors duration-300 ease-out"
+  : "text-base-content";
+const dateColor = hasCover
+  ? "text-white/80 group-has-checked:text-base-content/60 transition-colors duration-300 ease-out"
+  : "";
 ---
 
 <style>
@@ -29,23 +40,29 @@ const langs =
 </style>
 
 <article class="card bg-card smooth-border postcard-card
-                h-60 min-h-60 has-checked:h-auto relative flex flex-col group
-                transition-all " id={slug}>
-  <!-- {
-    f.index_img && (
-      <Image
-        inferSize
-        src={f.index_img}
-        alt={f
-          .index_img!.split("/")
-          .pop()!
-          .replace(/\.[^.]+$/, "")}
-      />
+                min-h-60 max-h-60 has-checked:max-h-[80rem] relative flex flex-col group
+                transition-[max-height] duration-300 ease-out overflow-clip" id={slug}>
+  <!-- 封面：文档流顶部，收拢时 max-h-60 裁剪铺满整卡，展开时 group-has-checked 放开按原始比例完整显示 -->
+  {
+    hasCover && (
+      <div class="shrink-0 overflow-hidden max-h-60 group-has-checked:max-h-[80rem]
+                  transition-[max-height] duration-300 ease-out relative">
+        <Image
+          inferSize
+          src={f.index_img!}
+          alt={coverAlt}
+          class="w-full h-auto block object-top"
+        />
+        {/* 顶部暗化衬标题，底部渐变消隐到卡片底色；展开时整体淡出，图片完整展示 */}
+        <div class="absolute inset-0 bg-linear-to-b from-black/50 via-black/15 to-base-100
+                    opacity-100 group-has-checked:opacity-0 transition-opacity duration-300 ease-out" />
+      </div>
     )
-  } -->
-  <!-- flex-1: 撑满卡片固定高度，使内部 Collapse flex-1 拿到剩余空间；
-       展开(h-auto)时 min-h-60 + flex-1 仍撑满 240px，短内容不会变矮，icons 贴底对齐 -->
-  <div class="p-5 text-xs text-base-content/60 min-h-0 flex-1 flex flex-col">
+  }
+  <div class={`p-5 text-xs text-base-content/60 flex flex-col relative z-10
+               min-h-60
+               transition-[margin-top] duration-300 ease-out
+               ${hasCover ? "-mt-60 group-has-checked:mt-0" : ""}`}>
     {
       f.status && (
         <div class="flex items-baseline gap-2 font-mono font-bold text-xs">
@@ -70,10 +87,10 @@ const langs =
       )
     }
 
-    {f.title && <h2 class="text-xl font-bold text-base-content leading-tight mt-2">
+    {f.title && <h2 class={`text-xl font-bold leading-tight mt-2 ${titleColor}`}>
       <a href={"#" + slug} class="z-10">{f.title}</a>
     </h2>}
-    {f.date && <div class="mt-1.5">{f.date}</div>}
+    {f.date && <div class={`mt-1.5 ${dateColor}`}>{f.date}</div>}
 
     <Collapse>
       <div class="mt-2.5 prose prose-slate prose-sm">
@@ -83,7 +100,7 @@ const langs =
 
     {
       langs.length > 1 && (
-        <div class="flex h-1 rounded-full mt-4">
+        <div class="flex h-1 rounded-full mt-4 shrink-0">
           {langs.map((l) => (
             <span style={{ width: l.pct + "%", backgroundColor: l.color }} />
           ))}
@@ -91,8 +108,9 @@ const langs =
       )
     }
 
-    <!-- 一排 icon -->
-    <div class="flex items-center gap-3 mt-3 *:shrink-0 overflow-clip not-has-[*]:hidden">
+    <!-- 一排 icon：右侧 mask 渐变消隐，溢出时在 repo/live 按钮前自然淡出 -->
+    <div class="flex items-center gap-3 mt-3 *:shrink-0 overflow-clip not-has-[*]:hidden shrink-0
+                [mask-image:linear-gradient(to_right,black,black_calc(100%_-_120px),transparent)]">
       {
         repo && (
           <span title="Stars">
@@ -150,9 +168,7 @@ const langs =
 
     <!-- 右下角 IconLink -->
     <div class="absolute flex bottom-3 right-3 z-10">
-      <!-- 给左侧小 icon 渐变消隐 -->
-      <div class="w-6 self-stretch bg-linear-to-r from-transparent to-base-100" />
-      <div class="flex gap-2 font-mono bg-base-100">
+      <div class="flex gap-2 font-mono">
       {
         f.repo && (
           <IconLink href={f.repo} class="repo-link">

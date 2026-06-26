@@ -12,6 +12,8 @@ export interface Frontmatter {
   date?: string;
   abbrlink?: string;
   index_img?: string;
+  betteruptime?: string;
+  bilibili?: string;
 }
 
 export type Status = "active" | "done" | "archived";
