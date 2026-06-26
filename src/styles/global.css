@@ -1,0 +1,26 @@
+@import "tailwindcss";
+@plugin "daisyui";
+@plugin "@tailwindcss/typography";
+
+@plugin "daisyui/theme" {
+  name: "light";
+  default: true;
+  --color-base-100: #ffffff;
+  --color-accent: #3080ED;
+}
+@plugin "daisyui/theme" {
+  name: "dark";
+  prefersdark: true;
+  --color-base-100: #151515;
+  --color-base-content: #ffffff;
+  --color-accent: #3080ED;
+}
+
+@theme {
+  --font-code:
+    ui-monospace, "Cascadia Code", "Fira Code", "JetBrains Mono", "SF Mono",
+    "Menlo", "Consolas", monospace;
+
+  /* --color-dark: #0c0c0c; */
+  /* --color-card: #151515; */
+}

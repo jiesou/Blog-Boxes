@@ -1,0 +1,87 @@
+---
+import { Image } from "astro:assets";
+import type { Contribution, ContributionKind } from "../types";
+
+interface Props {
+  contributions: Contribution[];
+}
+
+const { contributions } = Astro.props;
+
+const counts = contributions.reduce(
+  (acc, contribution) => {
+    for (const kind of contribution.kinds) acc[kind]++;
+    return acc;
+  },
+  { pr: 0, issue: 0, review: 0 } as Record<ContributionKind, number>,
+);
+---
+
+<div
+  class="absolute inset-0
+          flex overflow-hidden">
+  <!-- 左边竖着的装饰条 -->
+  <div
+    class="[writing-mode:vertical-rl] [text-orientation:mixed]
+              text-lg uppercase tracking-widest font-light
+              pt-5 pr-3 pb-4 pl-3.5 border-r-2 border-base-content/30" >
+    Contributions
+    {(["issue", "pr", "review"] as const)
+      .filter((k) => counts[k] > 0)
+      .map((kind, i) => (
+      <span>
+      ·
+      <strong class="text-accent">{counts[kind]}</strong> {kind}{"s"}
+      </span>
+      ))}
+  </div>
+  <!-- 自动滚动的贡献列表 -->
+  <div class="flex-1 relative overflow-hidden">
+      <div class="contrib-track">
+        {[...contributions, ...contributions].map((c, i) => (
+          <a
+            class="group flex items-center gap-3 px-4 py-3
+                      text-sm font-mono
+                      hover:bg-base-200 hover:text-accent hover:text-xl"
+            href={c.url}
+            title={c.kinds.join() + "#" + c.number}
+            target="_blank"
+            rel="noopener"
+          >
+            <Image
+              class="w-8 h-8 rounded-full bg-white transition-all group-hover:size-12 ease-out"
+              src={c.avatarUrl}
+              alt={c.owner}
+              width="64"
+              height="64"
+              loading={i < 20 ? "eager" : "lazy"}
+            />
+            <span class="truncate min-w-0">
+              <span class="group-hover:font-bold">{c.owner}</span>/{c.repo}
+            </span>
+            <span class="shrink-0 font-bold text-accent tabular-nums">
+              #{c.number}
+            </span>
+            <span class="shrink-0 ml-auto text-xs tabular-nums">
+              {c.createdAt.slice(0, 10)}
+            </span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style is:global>
+  @keyframes contrib-scroll {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(-50%);
+    }
+  }
+  .contrib-track {
+    animation: contrib-scroll 120s linear infinite;
+  }
+</style>

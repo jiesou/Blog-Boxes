@@ -1,0 +1,170 @@
+---
+import Image from "astro/components/Image.astro";
+---
+
+<div class="border-b-2 border-base-content/30">
+  <!-- flex-col or row 响应式 -->
+  <div class="flex flex-col lg:flex-row w-auto">
+    <!-- 左侧 Hero -->
+    <div class="p-12 max-md:p-6 w-full">
+      <h1 class="hero-title text-8xl max-md:text-6xl font-black">
+        jiechus'
+        <span class="inline-flex">
+          <span class="bracket">「</span>
+          <span class="inline-block" data-boxes>Boxes</span>
+          <span class="bracket">」</span>
+        </span>
+      </h1>
+      <p
+        class="hero-title text-lg text-base-content/60 mt-4 font-normal tracking-wide"
+      >
+        where I build things
+      </p>
+      <p class="text-sm text-base-content/60 mt-3 max-w-120 leading-relaxed">
+        I'm a developer learning programming, embedded systems, PCB design, and
+        full-stack development.
+      </p>
+      <div class="flex flex-wrap gap-10 mt-5">
+        <div
+          class="skeleton rounded-box w-full max-w-135"
+          style="aspect-ratio:540/234"
+        >
+          <picture>
+            <source
+              srcset="https://github-readme-stats-git-main-jiesous-projects.vercel.app/api?username=jiesou&count_private=true&card_width=450&card_height=195&theme=dark"
+              media="(prefers-color-scheme: dark)"
+            />
+            <Image
+              alt="GitHub stats"
+              src="https://github-readme-stats-git-main-jiesous-projects.vercel.app/api?username=jiesou&count_private=true&card_width=450&card_height=195&theme=default"
+              width="540"
+              height="234"
+              class="w-full h-full object-contain transition-opacity duration-300"
+              loading="eager"
+              style="opacity:0"
+              onload="this.style.opacity='';this.closest('.skeleton').classList.remove('skeleton')"
+            />
+          </picture>
+        </div>
+        <div
+          class="skeleton rounded-box w-full max-w-135"
+          style="aspect-ratio:540/234"
+        >
+          <picture>
+            <source
+              srcset="https://github-readme-stats-git-main-jiesous-projects.vercel.app/api/top-langs/?username=jiesou&exclude_repo=jiesou.github.io,Blog-Source&count_private=true&hide=c&layout=compact&langs_count=8&card_width=450&card_height=195&theme=dark"
+              media="(prefers-color-scheme: dark)"
+            />
+            <Image
+              alt="Top languages"
+              src="https://github-readme-stats-git-main-jiesous-projects.vercel.app/api/top-langs/?username=jiesou&exclude_repo=jiesou.github.io,Blog-Source&count_private=true&hide=c&layout=compact&langs_count=8&card_width=450&card_height=195&theme=default"
+              width="540"
+              height="234"
+              class="w-full h-full object-contain transition-opacity duration-300"
+              loading="eager"
+              style="opacity:0"
+              onload="this.style.opacity='';this.closest('.skeleton').classList.remove('skeleton')"
+            />
+          </picture>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右侧栏目 -->
+    <div
+      class="h-auto lg:w-220 lg:border-l-2 max-lg:h-120 max-lg:border-t-2 border-base-content/30 relative"
+    >
+      <slot />
+    </div>
+  </div>
+</div>
+
+<style is:global>
+  .char,
+  .bracket {
+    cursor: default;
+    will-change: transform;
+  }
+  .char {
+    display: inline-block;
+    transition:
+      transform 0.15s ease-out,
+      color 0.2s;
+    color: inherit;
+  }
+  .char.active {
+    color: var(--color-accent);
+  }
+  .bracket {
+    color: var(--color-accent);
+    display: inline-block;
+    transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+</style>
+
+<script>
+  {
+    const boxesEl = document.querySelector<HTMLElement>("[data-boxes]");
+    if (boxesEl) {
+      const text = boxesEl.textContent ?? "";
+      boxesEl.textContent = "";
+      for (const ch of text) {
+        const span = document.createElement("span");
+        span.className = "char";
+        span.textContent = ch;
+        boxesEl.appendChild(span);
+      }
+
+      const allChars = [
+        ...boxesEl.querySelectorAll<HTMLElement>(".char"),
+        ...boxesEl.parentElement!.querySelectorAll<HTMLElement>(".bracket"),
+      ];
+      const heroTitle = boxesEl.closest(".hero-title") as HTMLElement;
+
+      heroTitle.addEventListener("mousemove", (e: MouseEvent) => {
+        const mx = e.clientX;
+        const my = e.clientY;
+        allChars.forEach((c) => {
+          const cr = c.getBoundingClientRect();
+          const cx = cr.left + cr.width / 2;
+          const cy = cr.top + cr.height / 2;
+          const dx = mx - cx;
+          const dy = my - cy;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          const maxDist = 180;
+          if (dist < maxDist) {
+            const force = (1 - dist / maxDist) * 12;
+            c.style.transform = `translate(${(-dx * force) / dist}px, ${(-dy * force) / dist}px)`;
+            c.classList.add("active");
+          } else {
+            c.style.transform = "";
+            c.classList.remove("active");
+          }
+        });
+      });
+
+      heroTitle.addEventListener("mouseleave", () => {
+        allChars.forEach((c) => {
+          c.style.transform = "";
+          c.classList.remove("active");
+        });
+      });
+
+      let angle = 0;
+      const brackets =
+        boxesEl.parentElement!.querySelectorAll<HTMLElement>(".bracket");
+      const bracketTick = () => {
+        angle += 0.04;
+        brackets.forEach((b, i) => {
+          const offset = i === 0 ? -1 : 1;
+          const base = b.classList.contains("active") ? "scale(1.15) " : "";
+          b.style.transform =
+            base +
+            `translateY(${Math.sin(angle + i * 1.5) * 4 * offset}px) rotate(${Math.sin(angle + i) * 3}deg)`;
+        });
+        requestAnimationFrame(bracketTick);
+      };
+      bracketTick();
+    }
+  }
+</script>
