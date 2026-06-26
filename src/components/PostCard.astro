@@ -35,9 +35,9 @@ const coverAlt = hasCover
 </style>
 
 <article class="card bg-card smooth-border postcard-card
-                min-h-60 max-h-60 has-checked:max-h-320
+                min-h-60 max-h-60 has-checked:max-h-none
                 relative flex flex-col group
-                transition-[max-height] overflow-clip" id={slug}>
+                overflow-clip" id={slug}>
   <!-- 内容：始终在卡片顶部，flex-1 撑满收起时的 240px，z-10 浮在封面上 -->
   <div class="p-5 text-xs text-base-content/60 flex-1 min-h-60 flex flex-col relative z-10">
     {
@@ -196,7 +196,7 @@ const coverAlt = hasCover
     hasCover && (
       <div class="relative
                   -mt-60 group-has-checked:mt-0
-                  transition-[margin-top] ease-out">
+                  transition-[margin-top] duration-300 ease-out">
         <Image
           inferSize
           src={f.index_img!}
@@ -204,7 +204,7 @@ const coverAlt = hasCover
           class="w-full h-auto block"
         />
         <div class="absolute inset-0 bg-base-100/30
-                    opacity-100 group-has-checked:opacity-0 transition-opacity" />
+                    opacity-100 group-has-checked:opacity-0 transition-opacity duration-300" />
       </div>
     )
   }

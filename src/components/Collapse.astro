@@ -1,7 +1,9 @@
 <!--
   Collapse — 折叠内容区。
-  flex-1 min-h-0：撑满卡片剩余垂直空间，使卡片保持固定 height。
-  底部消隐用 mask（文字自身透明度），--fade 控制消隐高度，展开时淡出为 0。
+  使用双行 grid 过渡：收起时 80px 预览 + 0fr 隐藏区，
+  展开时预览行缩为 0 → 内容行扩为 1fr。
+  grid-template-rows 过渡不依赖内容高度，展开/收起双向平滑。
+  底部消隐用 mask，--fade 控制消隐高度。
 -->
 <style is:global>
   @property --fade {
@@ -11,19 +13,24 @@
   }
 </style>
 <div class="group relative flex-1 min-h-0 flex flex-col">
-  <!-- 内容区：撑满裁剪窗口，底部 mask 渐变消隐。
-       收起 --fade=48px 在窗口底部遮裁断处；展开 --fade=0 消隐淡出。 -->
   <div
-    class="relative overflow-hidden flex-1 min-h-0
-              [--fade:48px] group-has-checked:[--fade:0px]
-              mask-[linear-gradient(to_bottom,black_calc(100%-var(--fade)),transparent)]
-              transition-[--fade] duration-300 ease-out"
+    class="grid flex-1 min-h-0
+           grid-rows-[80px_0fr] group-has-checked:grid-rows-[0px_1fr]
+           transition-[grid-template-rows] duration-300 ease-in-out"
   >
-    <slot />
+    <div
+      class="overflow-hidden min-h-0
+             [grid-row:1/3]
+             [--fade:48px] group-has-checked:[--fade:0px]
+             mask-[linear-gradient(to_bottom,black_calc(100%-var(--fade)),transparent)]
+             transition-[--fade] duration-300 ease-in-out"
+    >
+      <slot />
+    </div>
   </div>
 
   <!-- label = 可点击区域 + 右侧 daisyUI swap (+/-)。
-       始终覆盖整个内容区：点击任意位置展开/收起。 -->
+        始终覆盖整个内容区：点击任意位置展开/收起。 -->
   <label
     class="absolute inset-0 z-10 flex items-end justify-end cursor-pointer"
     aria-label="展开/收起"

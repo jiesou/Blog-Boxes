@@ -10,10 +10,10 @@ const { items } = Astro.props;
 ---
 
 <div class="p-12.5 max-md:p-6.5">
-  <div class="columns-1 sm:columns-2 lg:columns-4 gap-5 xl:gap-10">
+  <div class="flex flex-wrap items-start gap-5 xl:gap-10">
     {
       items.map(({ post, repo }) => (
-        <div class="break-inside-avoid mb-5 xl:mb-10">
+        <div class="w-full sm:w-[calc(50%-0.625rem)] lg:w-[calc(25%-0.9375rem)] xl:w-[calc(25%-1.875rem)]">
           <PostCard post={post} repo={repo} />
         </div>
       ))
