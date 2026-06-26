@@ -1,0 +1,42 @@
+---
+export interface Props {
+  href: string;
+  class?: string;
+}
+
+const { href, class: cls = "" } = Astro.props;
+---
+
+<!--
+  Deconstructed from: btn btn-sm btn-ghost hover:btn-link hover:btn-accent
+
+  btn         → inline-flex items-center gap-1.5 font-semibold
+                 transition-colors duration-200 ease-out
+  btn-sm      → h-8 px-3 text-xs
+  btn-ghost   → text-base-content/60 (idle: currentColor from parent)
+  btn-link    → hover:underline, hover:--btn-fg → accent color
+  btn-accent  → hover:--btn-color → var(--color-accent)
+
+  Drop: border, bg, shadow (btn-ghost already transparent)
+        btn-ghost's own hover bg is overridden by btn-link's transparent
+-->
+<a
+  class={`inline-flex items-center shrink-0 gap-1.5
+         h-8 px-3
+         font-semibold text-xs
+         text-base-content/60
+         transition-colors duration-200 ease-out
+         ${cls}`}
+  href={href}
+  target="_blank"
+  rel="noopener"
+>
+  <slot />
+</a>
+
+<style>
+  a:hover {
+    color: var(--color-accent);
+    text-decoration-line: underline;
+  }
+</style>

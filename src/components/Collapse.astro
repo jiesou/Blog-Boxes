@@ -1,0 +1,33 @@
+<!--
+  Collapse — 折叠内容区。
+  flex-1 min-h-0：撑满卡片剩余垂直空间，使卡片保持固定 height。
+-->
+<div class="group relative flex-1 min-h-0 flex flex-col">
+  <!-- 内容区：收起时裁剪溢出，展开时放开 -->
+  <div class="relative overflow-hidden">
+    <slot />
+  </div>
+
+  <!-- 底部 label = 整条消隐条 + 可点击区域 + 右侧 daisyUI swap (+/-)。
+       点击 label 任意位置都会勾选 checkbox（新功能：整个消隐区域可触发）。 -->
+  <label
+    class="absolute bottom-0 right-0 z-10 flex w-full h-10 items-end justify-end cursor-pointer group-has-checked:w-auto group-has-checked:h-auto"
+    aria-label="展开/收起"
+  >
+    <!-- 消隐渐变：真实 div（非 ::after），展开时隐藏 -->
+    <div class="absolute inset-0 bg-linear-to-t from-base-100 to-transparent group-has-checked:hidden" />
+    <span class="swap">
+      <input type="checkbox" />
+      <span class="swap-on">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M5 11.5H19V12.5H5Z" fill="currentColor"></path>
+        </svg>
+      </span>
+      <span class="swap-off">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12.5 11.5H19V12.5H12.5V19H11.5V12.5H5V11.5H11.5V5H12.5V11.5Z" fill="currentColor"></path>
+        </svg>
+      </span>
+    </span>
+  </label>
+</div>
