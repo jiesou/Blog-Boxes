@@ -12,11 +12,6 @@ export default defineConfig({
     ],
   },
   vite: {
-    plugins: [tailwindcss()],
-    server: {
-      watch: {
-        ignored: ["**/node_modules/**", "**/.git/**"]
-      },
-    },
+    plugins: [tailwindcss()]
   },
 });

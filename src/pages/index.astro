@@ -127,7 +127,7 @@ async function fetchContributions(username: string): Promise<Contribution[]> {
   }
 }
 
-const boxes = import.meta.glob("../../../source/_posts/boxes/*.md", {
+const boxes = import.meta.glob("../../boxes/*.md", {
   eager: true,
 }) as Record<string, Post>;
 const raw = Object.values(boxes);
