@@ -1,0 +1,73 @@
+---
+interface Props {
+  host: string;
+}
+const { host } = Astro.props;
+const STATUS_URL = "https://jiecs-status.betteruptime.com";
+---
+
+<a
+  class="status-badge flex items-center gap-3 font-mono font-bold text-base-content/80 transition-colors hover:text-accent"
+  href={STATUS_URL}
+  target="_blank"
+  rel="noopener"
+  data-host={host}
+>
+  <span class="inline-grid *:[grid-area:1/1] status-dot-wrap">
+    <span class="status status-neutral status-dot"></span>
+  </span>
+  <span class="status-badge-label uppercase text-lg">---</span>
+  <span class="status-badge-sla skeleton h-5 w-20"></span>
+</a>
+
+<style is:global>
+  .status-dot { width: 4rem; height: 4rem; }
+</style>
+
+<script>
+  const STATUS_URL = "https://jiecs-status.betteruptime.com";
+  const jsonPromise = fetch(STATUS_URL + "/en/index.json").then((r) => r.json());
+  const COLORS: Record<string, string> = {
+    operational: "status-success",
+    not_monitored: "status-neutral",
+    downtime: "status-error",
+    maintenance: "status-warning",
+  };
+  const LABELS: Record<string, string> = {
+    operational: "UP",
+    not_monitored: "N/A",
+    downtime: "DOWN",
+    maintenance: "MAINT",
+  };
+  const TEXT_COLORS: Record<string, string> = {
+    operational: "text-success/80",
+    not_monitored: "text-base-content/80",
+    downtime: "text-error/80",
+    maintenance: "text-warning/80",
+  };
+  document.querySelectorAll<HTMLAnchorElement>(".status-badge").forEach(async (el) => {
+    const host = el.dataset.host;
+    if (!host) return;
+    try {
+      const json = await jsonPromise;
+      const res = (json.included as any[]).find(
+        (e) => e.type === "status_page_resource" && e.attributes.public_name === host,
+      );
+      if (!res) return;
+      const { status, availability } = res.attributes;
+      const color = COLORS[status] ?? "status-neutral";
+      const sla = String(parseFloat((availability * 100).toFixed(4))) + "%";
+      el.querySelector(".status-badge-sla")!.className = "status-badge-sla " + (TEXT_COLORS[status] ?? "");
+      el.querySelector(".status-badge-sla")!.textContent = sla;
+      const label = el.querySelector(".status-badge-label")!;
+      label.textContent = LABELS[status] ?? status.toUpperCase();
+      label.className = "status-badge-label uppercase " + (TEXT_COLORS[status] ?? "");
+      el.querySelector(".inline-grid")!.innerHTML =
+        status === "operational"
+          ? `<span class="status ${color} status-dot animate-ping"></span><span class="status ${color} status-dot"></span>`
+          : `<span class="status ${color} status-dot"></span>`;
+    } catch {
+      /* 静默失败，保留骨架占位 */
+    }
+  });
+</script>
