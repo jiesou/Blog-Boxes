@@ -8,8 +8,8 @@
 
 ## 这是什么
 
-一个使用 **Astro 6** + **Tailwind CSS 4** + **daisyUI** 构建的项目，从 `source/_posts/boxes/`（位于 Blog-Source 仓库）的 `.md` 文件构建 `/boxes/` 项目卡片页。
-`source/_posts/boxes/` 软链接到了 `./boxes`
+一个使用 **Astro 6** + **Tailwind CSS 4** + **daisyUI** 构建的项目，从 `source/_posts/_boxes/`（位于 Blog-Source 仓库）的 `.md` 文件构建 `/boxes/` 项目卡片页。
+`source/_posts/_boxes/` 软链接到了 `./boxes`
 
 作为 Blog-Source 的 git 子模块使用。
 
@@ -19,7 +19,7 @@
 
 | 路径 | 作用 |
 | --- | --- |
-| `src/pages/index.astro` | 首页 / 卡片网格，通过 `import.meta.glob` 读取 `source/_posts/boxes/*.md` |
+| `src/pages/index.astro` | 首页 / 卡片网格，通过 `import.meta.glob` 读取 `source/_posts/_boxes/*.md` |
 | `src/components/` | PostCard, HeroSection, PostsSection, ContributionStrip 等组件 |
 | `src/styles/` | Tailwind 全局样式 |
 | `src/data/` | 颜色配置等数据 |
