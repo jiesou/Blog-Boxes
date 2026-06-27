@@ -15,40 +15,30 @@ function intoCols(n: number) {
 }
 
 const cols4 = intoCols(4);
-const cols3 = intoCols(3);
 const cols2 = intoCols(2);
 ---
 
 <div class="p-12.5 max-md:p-6.5">
-  <!-- lg: 4 列 (desktop primary — DOM 第一，highlight 脚本优先命中) -->
-  <div class="hidden lg:flex gap-5 xl:gap-10">
+  <!-- xl: 4 列 -->
+  <div class="hidden xl:flex gap-5 xl:gap-10">
     {cols4.map((col) => (
       <div class="flex-1 flex flex-col gap-5 xl:gap-10">
-        {col.map(({ post, repo }) => <PostCard post={post} repo={repo} />)}
+        {col.map(({ post, repo }) => <PostCard post={post} repo={repo} idSuffix="-4" />)}
       </div>
     ))}
   </div>
 
-  <!-- md: 3 列 -->
-  <div class="hidden md:flex lg:hidden gap-5">
-    {cols3.map((col) => (
-      <div class="flex-1 flex flex-col gap-5">
-        {col.map(({ post, repo }) => <PostCard post={post} repo={repo} />)}
-      </div>
-    ))}
-  </div>
-
-  <!-- sm: 2 列 -->
-  <div class="hidden sm:flex md:hidden gap-5">
+  <!-- md: 2 列 -->
+  <div class="hidden md:flex xl:hidden gap-5">
     {cols2.map((col) => (
       <div class="flex-1 flex flex-col gap-5">
-        {col.map(({ post, repo }) => <PostCard post={post} repo={repo} />)}
+        {col.map(({ post, repo }) => <PostCard post={post} repo={repo} idSuffix="-2" />)}
       </div>
     ))}
   </div>
 
-  <!-- mobile: 1 列平铺 (DOM 最后，highlight 脚本兜底) -->
-  <div class="flex flex-col gap-5 sm:hidden">
-    {items.map(({ post, repo }) => <PostCard post={post} repo={repo} />)}
+  <!-- mobile: 1 列 -->
+  <div class="flex flex-col gap-5 md:hidden">
+    {items.map(({ post, repo }) => <PostCard post={post} repo={repo} idSuffix="-1" />)}
   </div>
 </div>

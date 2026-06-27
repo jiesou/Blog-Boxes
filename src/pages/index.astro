@@ -187,7 +187,7 @@ const contributions = await fetchContributions("jiesou");
     const hash = window.location.hash.slice(1);
     const abbrlink = hash.split("-")[0];
     if (!abbrlink) return;
-    const els = document.querySelectorAll(`[id^="${abbrlink}"]`);
+    const els = document.querySelectorAll(`[id^="${abbrlink}-"]`);
     for (const el of els) {
       if (el.offsetParent) {
         el.scrollIntoView();

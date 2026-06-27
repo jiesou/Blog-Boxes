@@ -8,9 +8,10 @@ import Image from "astro/components/Image.astro";
 interface Props {
   post: Post;
   repo: Repo | null;
+  idSuffix?: string;
 }
 
-const { post, repo } = Astro.props;
+const { post, repo, idSuffix = "" } = Astro.props;
 const f = post.frontmatter;
 const slug = f.abbrlink && f.title
   ? `${f.abbrlink}-${f.title.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]+/g, "-").replace(/^-+|-+$/g, "")}`
@@ -37,7 +38,7 @@ const coverAlt = hasCover
 <article class="card bg-card smooth-border postcard-card
                 min-h-60 max-h-60 has-checked:max-h-200
                 relative flex flex-col group
-                transition-[max-height] ease-out overflow-hidden" id={slug}>
+                transition-[max-height] ease-out overflow-hidden" id={slug + idSuffix}>
   <!-- 内容：flex-1 撑满卡片，z-10 浮在封面上 -->
   <div class="p-5 text-xs text-base-content/60 flex-1 min-h-60 flex flex-col relative z-10">
     {
