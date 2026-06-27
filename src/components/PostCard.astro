@@ -1,7 +1,7 @@
 ---
 import IconLink from "./IconLink.astro";
 import Collapse from "./Collapse.astro";
-import StatusBadge from "./StatusBadge.astro";
+import BetteruptimeStatus from "./BetteruptimeStatus.astro";
 import type { Repo, Post } from "../types";
 import Image from "astro/components/Image.astro";
 
@@ -35,9 +35,9 @@ const coverAlt = hasCover
 </style>
 
 <article class="card bg-card smooth-border postcard-card
-                min-h-60 max-h-60 has-checked:max-h-[800px]
+                min-h-60 max-h-60 has-checked:max-h-200
                 relative flex flex-col group
-                transition-[max-height] duration-300 ease-in-out overflow-hidden" id={slug}>
+                transition-[max-height] ease-out overflow-hidden" id={slug}>
   <!-- 内容：flex-1 撑满卡片，z-10 浮在封面上 -->
   <div class="p-5 text-xs text-base-content/60 flex-1 min-h-60 flex flex-col relative z-10">
     {
@@ -76,9 +76,7 @@ const coverAlt = hasCover
     </Collapse>
 
     {f.betteruptime && (
-      <div class="mt-4 shrink-0">
-        <StatusBadge host={f.betteruptime} />
-      </div>
+      <BetteruptimeStatus host={f.betteruptime} />
     )}
 
     {
@@ -196,15 +194,15 @@ const coverAlt = hasCover
     hasCover && (
       <div class="relative
                   -mt-60 group-has-checked:mt-0
-                  transition-[margin-top] duration-300 ease-in-out">
+                  transition-[margin-top] ease-out">
         <Image
           inferSize
           src={f.index_img!}
           alt={coverAlt}
           class="w-full h-auto block"
         />
-        <div class="absolute inset-0 bg-base-100/30
-                    opacity-100 group-has-checked:opacity-0 transition-opacity duration-300" />
+        <div class="absolute inset-0 bg-base-100/80
+                    opacity-100 group-has-checked:opacity-0 transition-opacity" />
       </div>
     )
   }
