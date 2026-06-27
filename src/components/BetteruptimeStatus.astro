@@ -1,73 +1,67 @@
 ---
 interface Props {
-  host: string;
+  public_name: string;
 }
-const { host } = Astro.props;
-const STATUS_URL = "https://jiecs-status.betteruptime.com";
+const { public_name } = Astro.props;
 ---
 
 <a
-  class="status-badge flex items-center gap-3 font-mono font-bold text-base-content/80 transition-colors hover:text-accent"
-  href={STATUS_URL}
+  href="https://jiecs-status.betteruptime.com"
   target="_blank"
   rel="noopener"
-  data-host={host}
+  data-host={public_name}
+  class="group"
 >
-  <span class="inline-grid *:[grid-area:1/1] status-dot-wrap">
-    <span class="status status-neutral status-dot"></span>
-  </span>
-  <span class="status-badge-label uppercase text-lg">---</span>
-  <span class="status-badge-sla skeleton h-5 w-20"></span>
+  <div class="flex items-baseline gap-8 font-code font-bold text-4xl">
+    <span class="inline-grid *:[grid-area:1/1] self-center" aria-hidden="true">
+      <span
+        class="status scale-200 w-4 h-4 hidden
+          group-data-[status]:!block
+          group-data-[status]:!animate-ping
+          group-data-[status=operational]:!status-success
+          group-data-[status=downtime]:!status-error
+          group-data-[status=maintenance]:!status-info
+          group-data-[status=not_monitored]:!status-neutral"
+      ></span>
+      <span
+        class="status status-neutral scale-200 w-4 h-4
+          group-data-[status=operational]:!status-success
+          group-data-[status=downtime]:!status-error
+          group-data-[status=maintenance]:!status-info
+          group-data-[status=not_monitored]:!status-neutral"
+      ></span>
+    </span>
+    <span
+      class="skeleton skeleton-text uppercase
+        group-data-[status=operational]:!text-success/80
+        group-data-[status=downtime]:!text-error/80
+        group-data-[status=maintenance]:!text-info/80
+        group-data-[status=not_monitored]:!text-base-content/80"
+    >UPDATING</span>
+  </div>
 </a>
 
-<style is:global>
-  .status-dot { width: 4rem; height: 4rem; }
-</style>
-
 <script>
-  const STATUS_URL = "https://jiecs-status.betteruptime.com";
-  const jsonPromise = fetch(STATUS_URL + "/en/index.json").then((r) => r.json());
-  const COLORS: Record<string, string> = {
-    operational: "status-success",
-    not_monitored: "status-neutral",
-    downtime: "status-error",
-    maintenance: "status-warning",
-  };
-  const LABELS: Record<string, string> = {
-    operational: "UP",
-    not_monitored: "N/A",
-    downtime: "DOWN",
-    maintenance: "MAINT",
-  };
-  const TEXT_COLORS: Record<string, string> = {
-    operational: "text-success/80",
-    not_monitored: "text-base-content/80",
-    downtime: "text-error/80",
-    maintenance: "text-warning/80",
-  };
-  document.querySelectorAll<HTMLAnchorElement>(".status-badge").forEach(async (el) => {
-    const host = el.dataset.host;
-    if (!host) return;
-    try {
-      const json = await jsonPromise;
-      const res = (json.included as any[]).find(
-        (e) => e.type === "status_page_resource" && e.attributes.public_name === host,
-      );
-      if (!res) return;
-      const { status, availability } = res.attributes;
-      const color = COLORS[status] ?? "status-neutral";
-      const sla = String(parseFloat((availability * 100).toFixed(4))) + "%";
-      el.querySelector(".status-badge-sla")!.className = "status-badge-sla " + (TEXT_COLORS[status] ?? "");
-      el.querySelector(".status-badge-sla")!.textContent = sla;
-      const label = el.querySelector(".status-badge-label")!;
-      label.textContent = LABELS[status] ?? status.toUpperCase();
-      label.className = "status-badge-label uppercase " + (TEXT_COLORS[status] ?? "");
-      el.querySelector(".inline-grid")!.innerHTML =
-        status === "operational"
-          ? `<span class="status ${color} status-dot animate-ping"></span><span class="status ${color} status-dot"></span>`
-          : `<span class="status ${color} status-dot"></span>`;
-    } catch {
-      /* 静默失败，保留骨架占位 */
-    }
-  });
+  fetch("https://jiecs-status.betteruptime.com/en/index.json")
+    .then((r) => r.json())
+    .then((json) => {
+      document.querySelectorAll("[data-host]").forEach((el) => {
+        const host = (el as HTMLElement).dataset.host;
+        if (!host) return;
+        const res = json.included.find(
+          (e: any) =>
+            e.type === "status_page_resource" &&
+            e.attributes.public_name === host,
+        );
+        if (!res) return;
+        const { status, availability } = res.attributes;
+        (el as HTMLElement).dataset.status = status;
+
+        const pct = parseFloat((availability * 100).toFixed(4));
+        const labelEl = el.querySelector(".skeleton")!;
+        labelEl.classList.remove("skeleton", "skeleton-text");
+        labelEl.textContent = `SLA ${pct}%`;
+      });
+    })
+    .catch((e) => console.error("Betteruptime fetch error:", e));
 </script>
