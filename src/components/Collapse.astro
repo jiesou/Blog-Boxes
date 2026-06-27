@@ -1,10 +1,38 @@
 <!--
   Collapse — 折叠内容区。
-  使用双行 grid 过渡：收起时 80px 预览 + 0fr 隐藏区，
-  展开时预览行缩为 0 → 内容行扩为 1fr。
-  grid-template-rows 过渡不依赖内容高度，展开/收起双向平滑。
-  底部消隐用 mask，--fade 控制消隐高度。
+  max-height 单维度动画 + overflow-hidden 物理裁剪 + mask 视觉渐隐。
+  mask 挂在外层：has-checked 才能匹配到内层 label 里的 checkbox，
+  渐隐位置 = 可见区底部，不受内容真实高度影响。
 -->
+<div
+  class="relative
+         max-h-46 has-checked:max-h-[100rem]
+         overflow-hidden
+         [--fade:32px] has-checked:[--fade:0px]
+         mask-[linear-gradient(to_bottom,black_calc(100%-var(--fade)),transparent)]
+         transition-[max-height,--fade] duration-300 ease-in-out"
+>
+  <slot />
+
+  <label class="swap absolute top-2 right-2" aria-label="展开/收起">
+    <input type="checkbox" />
+    <!-- - -->
+    <span class="swap-on">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M5 11.5H19V12.5H5Z" fill="currentColor"></path>
+      </svg>
+    </span>
+    <!-- + -->
+    <span class="swap-off">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+        <path
+          d="M12.5 11.5H19V12.5H12.5V19H11.5V12.5H5V11.5H11.5V5H12.5V11.5Z"
+          fill="currentColor"></path>
+      </svg>
+    </span>
+  </label>
+</div>
+
 <style is:global>
   @property --fade {
     syntax: "<length>";
@@ -12,43 +40,3 @@
     initial-value: 0px;
   }
 </style>
-<div class="group relative flex-1 min-h-0 flex flex-col">
-  <div
-    class="grid flex-1 min-h-0
-           grid-rows-[80px_0fr] group-has-checked:grid-rows-[0px_1fr]
-           transition-[grid-template-rows] duration-300 ease-in-out"
-  >
-    <div
-      class="overflow-hidden min-h-0
-             [grid-row:1/3]
-             [--fade:48px] group-has-checked:[--fade:0px]
-             mask-[linear-gradient(to_bottom,black_calc(100%-var(--fade)),transparent)]
-             transition-[--fade] duration-300 ease-in-out"
-    >
-      <slot />
-    </div>
-  </div>
-
-  <!-- label = 可点击区域 + 右侧 daisyUI swap (+/-)。
-        始终覆盖整个内容区：点击任意位置展开/收起。 -->
-  <label
-    class="absolute inset-0 z-10 flex items-end justify-end cursor-pointer"
-    aria-label="展开/收起"
-  >
-    <span class="swap">
-      <input type="checkbox" />
-      <span class="swap-on">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M5 11.5H19V12.5H5Z" fill="currentColor"></path>
-        </svg>
-      </span>
-      <span class="swap-off">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-          <path
-            d="M12.5 11.5H19V12.5H12.5V19H11.5V12.5H5V11.5H11.5V5H12.5V11.5Z"
-            fill="currentColor"></path>
-        </svg>
-      </span>
-    </span>
-  </label>
-</div>
