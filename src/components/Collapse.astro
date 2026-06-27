@@ -1,16 +1,14 @@
 <!--
   Collapse — 折叠内容区。
-  max-height 单维度动画 + overflow-hidden 物理裁剪 + mask 视觉渐隐。
-  mask 挂在外层：has-checked 才能匹配到内层 label 里的 checkbox，
-  渐隐位置 = 可见区底部，不受内容真实高度影响。
+  高度裁剪由父级 PostCard 的 max-h 控制，
+  这里负责 overflow-clip 兜底 + mask 渐隐视觉过渡。
+  has-checked 挂在外层：匹配内层 label 的 checkbox。
 -->
 <div
-  class="relative
-         max-h-46 has-checked:max-h-[100rem]
-         overflow-hidden
+  class="relative min-h-0 w-full overflow-clip
          [--fade:32px] has-checked:[--fade:0px]
          mask-[linear-gradient(to_bottom,black_calc(100%-var(--fade)),transparent)]
-         transition-[max-height,--fade] duration-300 ease-in-out"
+         transition-[--fade] duration-300 ease-in-out"
 >
   <slot />
 
@@ -40,3 +38,4 @@
     initial-value: 0px;
   }
 </style>
+

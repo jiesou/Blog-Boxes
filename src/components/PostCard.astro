@@ -51,7 +51,7 @@ const coverAlt = hasCover
           overflow-hidden"
 >
   <!-- Card 内容 -->
-  <div class="flex-1 flex flex-col z-10 p-5">
+  <div class="flex-1 min-h-0 flex flex-col z-10 p-5">
     {
       f.status && (
         <div class="flex items-baseline gap-2 font-code font-bold text-xs">
@@ -89,7 +89,8 @@ const coverAlt = hasCover
     }
     {f.date && <div class="mt-1.5">{f.date}</div>}
 
-    <div class="flex-1">
+    <!-- min-h-0 flex 超级重要 -->
+    <div class="flex-1 min-h-0 flex">
       <Collapse>
         <div class="mt-2.5 prose prose-slate prose-sm">
           <post.Content />
