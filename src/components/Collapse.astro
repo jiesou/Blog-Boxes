@@ -8,6 +8,7 @@
            [--fade:64px] group-has-checked/mask:[--fade:0px]
            mask-[linear-gradient(to_bottom,black_calc(100%-var(--fade)),transparent)]
            transition-[--fade] duration-300 ease-in-out
+           group-hover/mask:[--fade:24px]
            group-has-checked/mask:pb-2"
   >
     <slot />
@@ -21,13 +22,8 @@
   >
     <input type="checkbox" class="hidden" />
     <span
-      class="swap-off absolute
-             opacity-0 group-hover/mask:opacity-100
-             group-has-checked/mask:opacity-0
-             underline"
-      >展开</span
-    >
-    <span class="swap-on absolute
+      class="swap-on absolute
+             group-has-checked/mask:delay-200
              group-hover/expand:underline"
       >收起</span
     >
