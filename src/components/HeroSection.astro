@@ -26,7 +26,7 @@ import Image from "astro/components/Image.astro";
       </p>
       <div class="flex flex-wrap gap-10 mt-5">
         <div
-          class="skeleton rounded-box w-full max-w-135"
+          class="rounded-sm w-full max-w-135 overflow-clip"
           style="aspect-ratio:540/234"
         >
           <picture>
@@ -39,15 +39,13 @@ import Image from "astro/components/Image.astro";
               src="https://github-readme-stats-git-main-jiesous-projects.vercel.app/api?username=jiesou&count_private=true&card_width=450&card_height=195&theme=default"
               width="540"
               height="234"
-              class="w-full h-full object-contain transition-opacity"
+              class="skeleton rounded-none w-full h-full object-center"
               loading="eager"
-              style="opacity:0"
-              onload="this.style.opacity='';this.closest('.skeleton').classList.remove('skeleton')"
             />
           </picture>
         </div>
         <div
-          class="skeleton rounded-box w-full max-w-135"
+          class="rounded-sm w-full max-w-135 overflow-clip"
           style="aspect-ratio:540/234"
         >
           <picture>
@@ -60,10 +58,8 @@ import Image from "astro/components/Image.astro";
               src="https://github-readme-stats-git-main-jiesous-projects.vercel.app/api/top-langs/?username=jiesou&exclude_repo=jiesou.github.io,Blog-Source&count_private=true&hide=c&layout=compact&langs_count=8&card_width=450&card_height=195&theme=default"
               width="540"
               height="234"
-              class="w-full h-full object-contain transition-opacity"
+              class="skeleton rounded-none w-full h-full object-center"
               loading="eager"
-              style="opacity:0"
-              onload="this.style.opacity='';this.closest('.skeleton').classList.remove('skeleton')"
             />
           </picture>
         </div>
