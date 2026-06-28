@@ -35,6 +35,11 @@ const coverAlt = hasCover
 ---
 
 <style>
+  .postcard-card {
+    /* See: https://developer.chrome.com/docs/css-ui/animate-to-height-auto */
+    interpolate-size: allow-keywords;
+  }
+
   /* 普通 border 边缘像素锯齿 */
   .smooth-border {
     box-shadow: 0 0 0 1.3px #e2e0e0;
@@ -45,9 +50,9 @@ const coverAlt = hasCover
 <article
   id={slug + idSuffix}
   class="card bg-card smooth-border postcard-card
-          min-h-90 max-h-90 has-checked:max-h-200
+          min-h-90 max-h-90 has-checked:max-h-max
           flex flex-col group
-          transition-[max-height] ease-out duration-500
+          transition-[max-height] ease-in-out
           overflow-hidden"
 >
   <!-- Card 内容 -->
@@ -107,10 +112,10 @@ const coverAlt = hasCover
     }
 
     <!-- Card 的 footer -->
-    <div class="grid grid-cols-[1fr_auto] mt-3">
+    <div class="postcard-footer grid grid-cols-[1fr_auto] mt-3">
       <!-- langs 条：第一行填满 -->
       {
-        langs.length > 1 && (
+        langs.length > 0 && (
           <div class="col-span-2 w-full flex h-1 mb-2">
             {langs.map((l) => (
               <span style={{ width: l.pct + "%", backgroundColor: l.color }} />
@@ -251,8 +256,8 @@ const coverAlt = hasCover
     animation: highlight-flash 0.6s ease-out 0.6s 5;
   }
 
-  /* 悬停卡片任意位置 → 右下角最右侧链接高亮 (live > repo > bili) */
-  .postcard-card:hover :last-child:is(.bili-link, .repo-link, .live-link) {
+  /* 悬停卡片 footer 任意位置 → 右下角最右侧链接高亮 (live > repo > bili) */
+  .postcard-footer:hover :last-child:is(.bili-link, .repo-link, .live-link) {
     color: var(--color-accent);
     text-decoration-line: underline;
   }

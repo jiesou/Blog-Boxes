@@ -1,33 +1,36 @@
 <!--
   Collapse — 折叠内容区。
-  高度裁剪由父级 PostCard 的 max-h 控制，
-  这里负责 overflow-clip 兜底 + mask 渐隐视觉过渡。
-  has-checked 挂在外层：匹配内层 label 的 checkbox。
+  这里负责 mask 渐隐视觉过渡。
 -->
-<div
-  class="relative min-h-0 w-full overflow-clip
-         [--fade:32px] has-checked:[--fade:0px]
-         mask-[linear-gradient(to_bottom,black_calc(100%-var(--fade)),transparent)]
-         transition-[--fade] duration-300 ease-in-out"
->
-  <slot />
+<div class="relative min-h-0 w-full group/mask">
+  <div
+    class="h-full w-full
+           [--fade:64px] group-has-checked/mask:[--fade:0px]
+           mask-[linear-gradient(to_bottom,black_calc(100%-var(--fade)),transparent)]
+           transition-[--fade] duration-300 ease-in-out
+           group-has-checked/mask:pb-2"
+  >
+    <slot />
+  </div>
 
-  <label class="swap absolute top-2 right-2" aria-label="展开/收起">
-    <input type="checkbox" />
-    <!-- - -->
-    <span class="swap-on">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M5 11.5H19V12.5H5Z" fill="currentColor"></path>
-      </svg>
-    </span>
-    <!-- + -->
-    <span class="swap-off">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-        <path
-          d="M12.5 11.5H19V12.5H12.5V19H11.5V12.5H5V11.5H11.5V5H12.5V11.5Z"
-          fill="currentColor"></path>
-      </svg>
-    </span>
+  <label
+    class="swap absolute w-full cursor-pointer -bottom-1.5 group/expand
+          h-full group-has-checked/mask:h-15
+          flex items-end justify-center
+          *:text-sm *:font-bold *:text-accent"
+  >
+    <input type="checkbox" class="hidden" />
+    <span
+      class="swap-off absolute
+             opacity-0 group-hover/mask:opacity-100
+             group-has-checked/mask:opacity-0
+             underline"
+      >展开</span
+    >
+    <span class="swap-on absolute
+             group-hover/expand:underline"
+      >收起</span
+    >
   </label>
 </div>
 
@@ -38,4 +41,3 @@
     initial-value: 0px;
   }
 </style>
-
