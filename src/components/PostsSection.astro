@@ -14,16 +14,16 @@ function intoCols(n: number) {
   return cols;
 }
 
-const cols4 = intoCols(4);
+const cols3 = intoCols(3);
 const cols2 = intoCols(2);
 ---
 
 <div class="p-12.5 max-md:p-6.5">
-  <!-- xl: 4 列 -->
+  <!-- xl: 3 列 -->
   <div class="hidden xl:flex gap-5 xl:gap-10">
-    {cols4.map((col) => (
+    {cols3.map((col) => (
       <div class="flex-1 flex flex-col gap-5 xl:gap-10">
-        {col.map(({ post, repo }) => <PostCard post={post} repo={repo} idSuffix="-4" />)}
+        {col.map(({ post, repo }) => <PostCard post={post} repo={repo} idSuffix="-3" />)}
       </div>
     ))}
   </div>
