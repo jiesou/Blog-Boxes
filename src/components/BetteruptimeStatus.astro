@@ -16,27 +16,27 @@ const { public_name } = Astro.props;
     <span class="inline-grid *:[grid-area:1/1] self-center" aria-hidden="true">
       <span
         class="status scale-200 w-4 h-4 hidden
-          group-data-[status]:!block
-          group-data-[status]:!animate-ping
-          group-data-[status=operational]:!status-success
-          group-data-[status=downtime]:!status-error
-          group-data-[status=maintenance]:!status-info
-          group-data-[status=not_monitored]:!status-neutral"
+          group-data-status:block!
+          group-data-status:animate-ping!
+          group-data-[status=operational]:status-success!
+          group-data-[status=downtime]:status-error!
+          group-data-[status=maintenance]:status-info!
+          group-data-[status=not_monitored]:status-neutral!"
       ></span>
       <span
         class="status status-neutral scale-200 w-4 h-4
-          group-data-[status=operational]:!status-success
-          group-data-[status=downtime]:!status-error
-          group-data-[status=maintenance]:!status-info
-          group-data-[status=not_monitored]:!status-neutral"
+          group-data-[status=operational]:status-success!
+          group-data-[status=downtime]:status-error!
+          group-data-[status=maintenance]:status-info!
+          group-data-[status=not_monitored]:status-neutral!"
       ></span>
     </span>
     <span
       class="skeleton skeleton-text uppercase
-        group-data-[status=operational]:!text-success/80
-        group-data-[status=downtime]:!text-error/80
-        group-data-[status=maintenance]:!text-info/80
-        group-data-[status=not_monitored]:!text-base-content/80"
+        group-data-[status=operational]:text-success/80!
+        group-data-[status=downtime]:text-error/80!
+        group-data-[status=maintenance]:text-info/80!
+        group-data-[status=not_monitored]:text-base-content/80!"
     >UPDATING</span>
   </div>
 </a>
