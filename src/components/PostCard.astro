@@ -38,6 +38,7 @@ const coverAlt = hasCover
   .postcard-card {
     /* See: https://developer.chrome.com/docs/css-ui/animate-to-height-auto */
     interpolate-size: allow-keywords;
+    scroll-timeline: --card-scroll y;
   }
 
   /* 普通 border 边缘像素锯齿 */
@@ -105,7 +106,7 @@ const coverAlt = hasCover
 
     {
       f.betteruptime && (
-        <div class="m-7">
+        <div class="m-12">
           <BetteruptimeStatus public_name={f.betteruptime} />
         </div>
       )
