@@ -10,6 +10,7 @@
     "@tailwindcss/vite": "^4.3.1",
     "astro": "^6.4.8",
     "daisyui": "^5.5.23",
+    "rehype-external-links": "^3.0.0",
     "tailwindcss": "^4.3.1"
   },
   "devDependencies": {
