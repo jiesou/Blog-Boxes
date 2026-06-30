@@ -7,38 +7,15 @@ interface Props {
 }
 
 const { items } = Astro.props;
-
-function intoCols(n: number) {
-  const cols: { post: Post; repo: Repo | null }[][] = Array.from({ length: n }, () => []);
-  items.forEach((item, i) => cols[i % n].push(item));
-  return cols;
-}
-
-const cols3 = intoCols(3);
-const cols2 = intoCols(2);
 ---
 
 <div class="p-12.5 max-md:p-6.5">
-  <!-- xl: 3 列 -->
-  <div class="hidden xl:flex gap-5 xl:gap-10">
-    {cols3.map((col) => (
-      <div class="flex-1 flex flex-col gap-5 xl:gap-10">
-        {col.map(({ post, repo }) => <PostCard post={post} repo={repo} idSuffix="-3" />)}
-      </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 xl:gap-10 grid-flow-dense">
+    {items.map(({ post, repo }) => (
+      <PostCard
+        post={post}
+        repo={repo}
+      />
     ))}
-  </div>
-
-  <!-- md: 2 列 -->
-  <div class="hidden md:flex xl:hidden gap-5">
-    {cols2.map((col) => (
-      <div class="flex-1 flex flex-col gap-5">
-        {col.map(({ post, repo }) => <PostCard post={post} repo={repo} idSuffix="-2" />)}
-      </div>
-    ))}
-  </div>
-
-  <!-- mobile: 1 列 -->
-  <div class="flex flex-col gap-5 md:hidden">
-    {items.map(({ post, repo }) => <PostCard post={post} repo={repo} idSuffix="-1" />)}
   </div>
 </div>

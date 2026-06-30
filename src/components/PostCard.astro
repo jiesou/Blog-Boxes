@@ -50,14 +50,21 @@ const coverAlt = hasCover
 
 <article
   id={slug + idSuffix}
-  class="card bg-card smooth-border postcard-card
-          min-h-75 max-h-75 has-checked:max-h-max
-          flex flex-col group relative
-          transition-[max-height] ease-in-out duration-500
-          overflow-hidden"
+  class={`card bg-card smooth-border postcard-card
+    min-h-75 max-h-75 has-checked:max-h-[2000px]
+    flex flex-col group relative
+    transition-[max-height] ease-in-out duration-500
+    overflow-hidden${hasCover ? " md:col-span-2" : ""}`}
 >
-  <!-- Card 内容 -->
-  <div class="relative flex-1 min-h-0 flex flex-col z-10 p-5 pb-2">
+  <!-- Card 内容: 有图card始终 grid 2列 (左文字+右图) -->
+  <div
+    class={`relative flex-1 min-h-0 z-10
+      ${hasCover
+        ? "grid grid-cols-2 grid-rows-[1fr]"
+        : "flex flex-col p-5 pb-2"}`}
+  >
+    <!-- 左列：文字 + footer -->
+    <div class={hasCover ? "h-full flex flex-col p-5 pb-2" : ""}>
     {
       f.status && (
         <div class="flex items-baseline gap-2 font-code font-bold text-xs">
@@ -221,40 +228,22 @@ const coverAlt = hasCover
         }
       </div>
     </div>
+    </div>
+
+    <!-- 右列图片 (始终可见) -->
+    {
+      hasCover && (
+        <div class="overflow-hidden h-full">
+          <Image
+            inferSize
+            src={f.index_img!}
+            alt={coverAlt}
+            class="w-full h-full object-cover object-center"
+          />
+        </div>
+      )
+    }
   </div>
-  {
-    hasCover && (
-      <div
-        class="absolute inset-0 z-0 pointer-events-none
-                  opacity-100 group-has-checked:opacity-0
-                  transition-opacity duration-500"
-      >
-        <Image
-          inferSize
-          src={f.index_img!}
-          alt={coverAlt}
-           class="w-full h-full object-cover object-center
-                  mask-[linear-gradient(to_bottom,#00000070_30%,transparent_50%)]"
-        />
-      </div>
-    )
-  }
-  {
-    hasCover && (
-      <div
-        class="max-h-0 group-has-checked:max-h-max
-                  transition-[max-height] ease-in-out duration-500
-                  [interpolate-size:allow-keywords]"
-      >
-        <Image
-          inferSize
-          src={f.index_img!}
-          alt={coverAlt}
-          class="w-full h-auto"
-        />
-      </div>
-    )
-  }
 </article>
 
 <style is:global>
