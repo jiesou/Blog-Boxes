@@ -25,6 +25,7 @@ const langs =
   repo?.languages
     ?.map((l) => ({ ...l, pct: (l.bytes / total) * 100 }))
     .filter((l) => l.pct >= 1) ?? [];
+const primaryUrl = f.url || f.repo || f.bilibili || "";
 const hasCover = !!f.index_img;
 const coverAlt = hasCover
   ? f
@@ -120,7 +121,17 @@ const coverAlt = hasCover
       }
 
       <!-- Card 的 footer -->
-      <div class="postcard-footer grid grid-cols-[1fr_auto] mt-2">
+      <div class="postcard-footer relative grid grid-cols-[1fr_auto] mt-2">
+        {
+          primaryUrl && (
+            <a
+              href={primaryUrl}
+              class="absolute inset-0 z-0"
+              aria-label="View project"
+            />
+          )
+        }
+
         <!-- langs 条：第一行填满 -->
         {
           langs.length > 0 && (
@@ -136,7 +147,7 @@ const coverAlt = hasCover
 
         <!-- 左下角一排 info icon：右侧 mask 渐变消隐，溢出时在 repo/live 按钮前自然淡出 -->
         <div
-          class="justify-start overflow-clip min-w-0 flex items-center gap-3 text-xs text-base-content/60 *:shrink-0"
+          class="justify-start overflow-clip min-w-0 flex items-center gap-3 text-xs text-base-content/60 *:shrink-0 relative z-10 pointer-events-none"
         >
           {
             repo && (
@@ -195,7 +206,7 @@ const coverAlt = hasCover
         </div>
 
         <!-- 右下角一排 icon link -->
-        <div class="justify-end flex gap-2 font-code shrink-0">
+        <div class="justify-end flex gap-2 font-code shrink-0 relative z-10 pointer-events-none">
           {
             f.bilibili && (
               <IconLink href={f.bilibili} class="bili-link">
