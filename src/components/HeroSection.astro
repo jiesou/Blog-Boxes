@@ -6,71 +6,73 @@ import Image from "astro/components/Image.astro";
   <!-- flex-col or row 响应式 -->
   <div class="flex flex-col lg:flex-row w-auto">
     <!-- 左侧 Hero -->
-    <div class="p-12 max-md:p-6 w-full font-code">
-      <h1 class="hero-title text-8xl max-md:text-6xl font-black">
-        jiechus'
-        <span class="inline-flex">
-          <span class="bracket">「</span>
-          <span class="inline-block" data-boxes>Boxes</span>
-          <span class="bracket">」</span>
-        </span>
-      </h1>
-      <p
-        class="text-lg text-base-content/70 mt-4 font-normal tracking-wide"
-      >
-        where I build things
-      </p>
-      <p class="text-sm text-base-content/70 mt-3 max-w-120 leading-relaxed">
-        I'm a developer learning programming, embedded systems, PCB design, and
-        full-stack development.
-      </p>
-      <div class="flex flex-wrap gap-10 mt-5">
-        <a
-          href="https://github.com/jiesou"
-          class="rounded-sm w-full max-w-135 overflow-clip block"
-          style="aspect-ratio:540/234"
-        >
-          <picture>
-            <source
-              srcset="https://github-readme-stats-git-main-jiesous-projects.vercel.app/api?username=jiesou&count_private=true&card_width=450&card_height=195&theme=dark"
-              media="(prefers-color-scheme: dark)"
-            />
-            <Image
-              alt="GitHub stats"
-              src="https://github-readme-stats-git-main-jiesous-projects.vercel.app/api?username=jiesou&count_private=true&card_width=450&card_height=195&theme=default"
-              width="540"
-              height="234"
-              class="skeleton rounded-none w-full h-full object-center"
-              loading="eager"
-            />
-          </picture>
-        </a>
-        <a
-          href="https://github.com/jiesou"
-          class="rounded-sm w-full max-w-135 overflow-clip block"
-          style="aspect-ratio:540/234"
-        >
-          <picture>
-            <source
-              srcset="https://github-readme-stats-git-main-jiesous-projects.vercel.app/api/top-langs/?username=jiesou&exclude_repo=jiesou.github.io,Blog-Source&count_private=true&hide=c&layout=compact&langs_count=8&card_width=450&card_height=195&theme=dark"
-              media="(prefers-color-scheme: dark)"
-            />
-            <Image
-              alt="Top languages"
-              src="https://github-readme-stats-git-main-jiesous-projects.vercel.app/api/top-langs/?username=jiesou&exclude_repo=jiesou.github.io,Blog-Source&count_private=true&hide=c&layout=compact&langs_count=8&card_width=450&card_height=195&theme=default"
-              width="540"
-              height="234"
-              class="skeleton rounded-none w-full h-full object-center"
-              loading="eager"
-            />
-          </picture>
-        </a>
+    <div class="flex-1 min-w-0">
+      <div class="p-12 pb-0 max-md:p-6 font-code">
+        <h1 class="hero-title text-8xl max-md:text-6xl font-black">
+          jiechus'<span class="inline-flex">
+            <span class="bracket">「</span>
+            <span class="inline-block" data-boxes>Boxes</span>
+            <span class="bracket">」</span>
+          </span>
+        </h1>
+        <p class="text-lg text-base-content/70 mt-4 font-normal tracking-wide">
+          where I build things
+        </p>
+        <p class="text-sm text-base-content/70 mt-3 max-w-120 leading-relaxed">
+          I'm a developer learning programming, embedded systems, PCB design,
+          and full-stack development.
+        </p>
+      </div>
+
+      <div class="p-10 pt-0 mt-5">
+        <div class="flex flex-wrap gap-10">
+          <a
+            href="https://github.com/jiesou"
+            class="rounded-sm w-full max-w-135 lg:max-w-115 xl:max-w-103 2xl:max-w-135 overflow-clip block"
+            style="aspect-ratio:450/195"
+          >
+            <picture>
+              <source
+                srcset="https://github-readme-stats-git-main-jiesous-projects.vercel.app/api?username=jiesou&count_private=true&card_width=450&card_height=195&theme=dark"
+                media="(prefers-color-scheme: dark)"
+              />
+              <Image
+                alt="GitHub stats"
+                src="https://github-readme-stats-git-main-jiesous-projects.vercel.app/api?username=jiesou&count_private=true&card_width=450&card_height=195&theme=default"
+                width="540"
+                height="234"
+                class="skeleton rounded-none w-full h-full object-center"
+                loading="eager"
+              />
+            </picture>
+          </a>
+          <a
+            href="https://github.com/jiesou"
+            class="rounded-sm w-full max-w-135 lg:max-w-115 xl:max-w-103 2xl:max-w-135 overflow-clip block"
+            style="aspect-ratio:450/195"
+          >
+            <picture>
+              <source
+                srcset="https://github-readme-stats-git-main-jiesous-projects.vercel.app/api/top-langs/?username=jiesou&exclude_repo=jiesou.github.io,Blog-Source&count_private=true&hide=c&layout=compact&langs_count=8&card_width=450&card_height=195&theme=dark"
+                media="(prefers-color-scheme: dark)"
+              />
+              <Image
+                alt="Top languages"
+                src="https://github-readme-stats-git-main-jiesous-projects.vercel.app/api/top-langs/?username=jiesou&exclude_repo=jiesou.github.io,Blog-Source&count_private=true&hide=c&layout=compact&langs_count=8&card_width=450&card_height=195&theme=default"
+                width="540"
+                height="234"
+                class="skeleton rounded-none w-full h-full object-center"
+                loading="eager"
+              />
+            </picture>
+          </a>
+        </div>
       </div>
     </div>
 
     <!-- 右侧栏目 -->
     <div
-      class="h-auto lg:w-220 lg:border-l-2 max-lg:h-120 max-lg:border-t-2 border-base-content/30 relative"
+      class="h-auto flex-1 max-w-123 lg:border-l-2 max-lg:h-120 max-lg:border-t-2 border-base-content/30 relative"
     >
       <slot />
     </div>
@@ -82,6 +84,9 @@ import Image from "astro/components/Image.astro";
   .bracket {
     cursor: default;
     will-change: transform;
+  }
+  [data-boxes] {
+    white-space: nowrap;
   }
   .char {
     display: inline-block;
@@ -118,7 +123,9 @@ import Image from "astro/components/Image.astro";
         ...boxesEl.parentElement!.querySelectorAll<HTMLElement>(".bracket"),
       ];
       const heroTitle = boxesEl.closest(".hero-title") as HTMLElement;
-      let mx = 0, my = 0, framePending = false;
+      let mx = 0,
+        my = 0,
+        framePending = false;
 
       const applyForce = () => {
         framePending = false;
@@ -143,13 +150,21 @@ import Image from "astro/components/Image.astro";
       const onMove = (cx: number, cy: number) => {
         mx = cx;
         my = cy;
-        if (!framePending) { framePending = true; requestAnimationFrame(applyForce); }
+        if (!framePending) {
+          framePending = true;
+          requestAnimationFrame(applyForce);
+        }
       };
 
-      heroTitle.addEventListener("mousemove", (e: MouseEvent) => onMove(e.clientX, e.clientY));
+      heroTitle.addEventListener("mousemove", (e: MouseEvent) =>
+        onMove(e.clientX, e.clientY),
+      );
       heroTitle.addEventListener("touchmove", (e: TouchEvent) => {
         const t = e.touches[0];
-        if (t) { e.preventDefault(); onMove(t.clientX, t.clientY); }
+        if (t) {
+          e.preventDefault();
+          onMove(t.clientX, t.clientY);
+        }
       });
 
       const reset = () => {

@@ -9,7 +9,7 @@ interface Props {
 const { items } = Astro.props;
 ---
 
-<div class="p-12.5 max-md:p-6.5">
+<div class="p-10 max-md:p-6.5">
   <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 xl:gap-10 grid-flow-dense">
     {items.map(({ post, repo }) => (
       <PostCard

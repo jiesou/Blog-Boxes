@@ -171,13 +171,15 @@ const contributions = await fetchContributions("jiesou");
     <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body>
-    <HeroSection>
-      <ContributionStrip contributions={contributions} />
-    </HeroSection>
-    <PostsSection items={sorted} />
-    <footer class="p-8 text-center text-xs text-base-content/50 font-code">
-      Made by &hearts; |<a class="link link-hover hover:text-accent ml-2" href="https://github.com/jiesou/Blog-Boxes">View Source</a>
-    </footer>
+    <div class="mx-auto max-w-450 lg:border-x-2 lg:border-base-content/30">
+      <HeroSection>
+        <ContributionStrip contributions={contributions} />
+      </HeroSection>
+      <PostsSection items={sorted} />
+      <footer class="p-8 text-center text-xs text-base-content/50 font-code">
+        Made by &hearts; |<a class="link link-hover hover:text-accent ml-2" href="https://github.com/jiesou/Blog-Boxes">View Source</a>
+      </footer>
+    </div>
   </body>
 </html>
 
