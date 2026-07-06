@@ -21,7 +21,7 @@
            *:text-sm *:font-bold *:text-accent"
     data-collapse-toggle
   >
-    <input type="checkbox" class="hidden" />
+    <input type="checkbox" />
     <span
       class="swap-on absolute
              group-has-checked/mask:delay-200
@@ -38,26 +38,39 @@
     initial-value: 0px;
   }
 
-  @supports (animation-timeline: scroll()) {
-    [data-collapse-toggle] {
-      visibility: hidden;
-      pointer-events: none;
-      animation: collapse-show linear;
-      animation-timeline: --card-scroll;
-      animation-fill-mode: none;
-    }
-
-    [data-collapse-toggle]:has(:checked) {
-      visibility: visible;
-      pointer-events: auto;
-      animation: none;
-    }
-  }
-
-  @keyframes collapse-show {
-    0%, 100% {
-      visibility: visible;
-      pointer-events: auto;
-    }
+  [data-collapse-toggle]:has(:checked) {
+    visibility: visible;
+    pointer-events: auto;
   }
 </style>
+
+<script>
+  for (const toggle of document.querySelectorAll("[data-collapse-toggle]") as unknown as HTMLElement[]) {
+    const card = toggle.closest(".postcard-card") as HTMLElement | null;
+    if (!card) continue;
+
+    const mask = toggle.previousElementSibling as HTMLElement;
+    const checkbox = toggle.querySelector<HTMLInputElement>("input");
+
+    const show = () => { toggle.style.visibility = toggle.style.pointerEvents = ""; };
+    const hide = () => { toggle.style.visibility = "hidden"; toggle.style.pointerEvents = "none"; };
+
+    // Show expand button when the card can reveal more content
+    const update = () => {
+      if (checkbox?.checked) return show();
+      // if (card.scrollHeight > card.clientHeight) return show();  // content overflows card
+      if (mask.scrollHeight > mask.clientHeight) return show();  // mask hides content
+      if (card.querySelector("img.object-cover")) return show(); // cover image may crop
+      hide();
+    };
+
+    new ResizeObserver(update).observe(card);
+
+    // Images may affect layout, re-check after they load
+    for (const img of card.querySelectorAll("img"))
+      if (!img.complete) img.addEventListener("load", update, { once: true });
+
+    checkbox?.addEventListener("change", update);
+    update();
+  }
+</script>
