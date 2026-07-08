@@ -60,7 +60,7 @@
       if (checkbox?.checked) return show();
       // if (card.scrollHeight > card.clientHeight) return show();  // content overflows card
       if (mask.scrollHeight > mask.clientHeight) return show();  // mask hides content
-      if (card.querySelector("img.object-cover")) return show(); // cover image may crop
+      if (card.querySelector("img.cover-img")) return show(); // cover image may crop
       hide();
     };
 

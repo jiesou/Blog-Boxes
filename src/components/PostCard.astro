@@ -254,18 +254,18 @@ if (hasCover)
     </div>
 
 <!--
-      封面揭盖动画 — PostCard 单源双图纯 CSS 方案
+      封面揭盖动画 — PostCard 单图纯 CSS 方案
       ───────────────────────────────────────────────────────────────
       需求：收起居中 / 展开贴顶完整比例 / 展开动画"一气呵成"无回弹 / 纯 CSS 无 JS
 
       原理：图片在右列做"门帘式揭盖"——card 的高度动画本身揭盖图片；
-            可见图绝对定位，top 端点都在常量 length 之间线性插值，不依赖
-            正在动画的 column 高度，故 transition 单调、无回弹。
+            单张图片 in-flow (position: relative) 既撑出 expanded 态列高 = 图片自然高，
+            又用 top 在两个常量 length 端点间线性插值，不依赖正在动画的 column 高度，
+            故 transition 单调、无回弹。
 
       结构：
         column (relative overflow-hidden @container)
-          ├── spacer  Image (invisible 不可见 in-flow，撑出 expanded 态最小列高 = 图片自然高)
-          └── visible Image (absolute, top 切换 collapsed↔expanded)
+          └── Image (position: relative, in-flow, top 切换 collapsed<->expanded)
 
       端点常量化 (核心):
         column 宽不参与动画 → @container 暴露的 100cqi 在动画期间是常量
@@ -274,9 +274,11 @@ if (hasCover)
         → collapsed 态让图片垂直居中所需偏移 (H_c - I_h)/2
                       = (var(--spacing) * 75 - 100cqi · coverRatio) / 2  (常量 length!)
 
-      为什么双图而非单图 h-full:
-        单图 h-full=100% 相对父（column）高度，而 column 高度在 transition 期间也在
-        动画，百分比每帧重新解析，复合求导会出现"先下移再回升"的回弹轨迹。
+      为什么单图 h-auto 而非 h-full:
+        h-full=100% 相对父（column）高度，column 高度在 transition 期间也在动画，
+        百分比每帧重新解析，复合求导会出现"先下移再回升"的回弹轨迹。
+        h-auto 则图片高度 = 100cqi·coverRatio = 常量 length（不随 column 重新解析），
+        配合 position: relative 自身留在 flow 中撑出列高，无需额外 spacer。
 
       为什么常量 length 而非 top:50%:
         top:50% 相对 column 高度，column 高度随 transition 变。
@@ -297,21 +299,12 @@ if (hasCover)
                  @container"
           style={`--cover-top-collapsed: calc((var(--spacing) * 75 - 100cqi * ${coverRatio}) / 2)`}
         >
-          {/* spacer: in-flow 不可见，撑出 expanded 态最小列高 = 图片自然高 */}
-          <Image
-            inferSize
-            src={f.index_img!}
-            alt=""
-            aria-hidden="true"
-            class="block w-full h-auto
-                   invisible pointer-events-none select-none"
-          />
-          {/* visible: absolute，top 在两稳态间连续插值 */}
+          {/* 单图 in-flow：position: relative 自身撑出 expanded 列高；top 常量插值 */}
           <Image
             inferSize
             src={f.index_img!}
             alt={coverAlt}
-            class="absolute left-0 w-full h-auto object-cover object-center
+            class="cover-img block relative w-full h-auto
                    top-(--cover-top-collapsed) group-has-checked:top-0
                    transition-[top] ease-in-out duration-500
                    pointer-events-none select-none"
