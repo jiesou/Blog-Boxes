@@ -4,6 +4,7 @@ import Collapse from "./Collapse.astro";
 import BetteruptimeStatus from "./BetteruptimeStatus.astro";
 import type { Repo, Post } from "../types";
 import Image from "astro/components/Image.astro";
+import { inferRemoteSize } from "astro:assets";
 
 interface Props {
   post: Post;
@@ -33,6 +34,15 @@ const coverAlt = hasCover
       .pop()!
       .replace(/\.[^.]+$/, "")
   : "";
+
+// build-time 拦截图片真实长宽比；失败时退回 1:1 (仅影响 collapsed 居中视觉)
+// 详细方案见下方封面块注释
+let coverRatio = 1;
+if (hasCover)
+  try {
+    const { width, height } = await inferRemoteSize(f.index_img!);
+    if (width && height) coverRatio = height / width;
+  } catch {}
 ---
 
 <style>
@@ -206,7 +216,9 @@ const coverAlt = hasCover
         </div>
 
         <!-- 右下角一排 icon link -->
-        <div class="justify-end flex gap-2 font-code shrink-0 relative z-10 pointer-events-none">
+        <div
+          class="justify-end flex gap-2 font-code shrink-0 relative z-10 pointer-events-none"
+        >
           {
             f.bilibili && (
               <IconLink href={f.bilibili} class="bili-link">
@@ -241,15 +253,68 @@ const coverAlt = hasCover
       </div>
     </div>
 
-    <!-- 右列图片 (始终可见) -->
+<!--
+      封面揭盖动画 — PostCard 单源双图纯 CSS 方案
+      ───────────────────────────────────────────────────────────────
+      需求：收起居中 / 展开贴顶完整比例 / 展开动画"一气呵成"无回弹 / 纯 CSS 无 JS
+
+      原理：图片在右列做"门帘式揭盖"——card 的高度动画本身揭盖图片；
+            可见图绝对定位，top 端点都在常量 length 之间线性插值，不依赖
+            正在动画的 column 高度，故 transition 单调、无回弹。
+
+      结构：
+        column (relative overflow-hidden @container)
+          ├── spacer  Image (invisible 不可见 in-flow，撑出 expanded 态最小列高 = 图片自然高)
+          └── visible Image (absolute, top 切换 collapsed↔expanded)
+
+      端点常量化 (核心):
+        column 宽不参与动画 → @container 暴露的 100cqi 在动画期间是常量
+        图片比例 build-time 由 inferRemoteSize() 取得 → coverRatio 常量
+        card 收起高度与 article 的 h-75 同源 = var(--spacing) * 75
+        → collapsed 态让图片垂直居中所需偏移 (H_c - I_h)/2
+                      = (var(--spacing) * 75 - 100cqi · coverRatio) / 2  (常量 length!)
+
+      为什么双图而非单图 h-full:
+        单图 h-full=100% 相对父（column）高度，而 column 高度在 transition 期间也在
+        动画，百分比每帧重新解析，复合求导会出现"先下移再回升"的回弹轨迹。
+
+      为什么常量 length 而非 top:50%:
+        top:50% 相对 column 高度，column 高度随 transition 变。
+        y(t) = 0.5·(1-p)·(H(t)-I_h)，H(t) 与 (1-p) 同时增大/减小，
+        在 p≈0.42 处出现极值 → 经典的"图片先瞬移到下面再回到上面"症状。
+        改用 calc((18.75rem - 100cqi·coverRatio)/2) → 端点为常量 length，linear 单调。
+
+      兼容性：
+        @container / cqi                Chrome 105+ / Safari 16+ / Firefox 110+
+        inferRemoteSize                Astro 6 build-time API，无 client-side 负担
+        interpolate-size: allow-keywords Chrome 129+ — 已是项目既有前提 (card height 动画)
+        不支持时退化为瞬时切换，端点仍正确
+    -->
     {
       hasCover && (
-        <div class="overflow-hidden flex-1 min-w-0">
+        <div
+          class="relative overflow-hidden flex-1 min-w-0
+                 @container"
+          style={`--cover-top-collapsed: calc((var(--spacing) * 75 - 100cqi * ${coverRatio}) / 2)`}
+        >
+          {/* spacer: in-flow 不可见，撑出 expanded 态最小列高 = 图片自然高 */}
+          <Image
+            inferSize
+            src={f.index_img!}
+            alt=""
+            aria-hidden="true"
+            class="block w-full h-auto
+                   invisible pointer-events-none select-none"
+          />
+          {/* visible: absolute，top 在两稳态间连续插值 */}
           <Image
             inferSize
             src={f.index_img!}
             alt={coverAlt}
-            class="w-full h-full object-cover object-center"
+            class="absolute left-0 w-full h-auto object-cover object-center
+                   top-(--cover-top-collapsed) group-has-checked:top-0
+                   transition-[top] ease-in-out duration-500
+                   pointer-events-none select-none"
           />
         </div>
       )
