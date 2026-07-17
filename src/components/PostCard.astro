@@ -114,7 +114,7 @@ const coverAlt = hasCover
       <!-- min-h-0 flex 超级重要 -->
       <div class="flex-1 min-h-0 flex">
         <Collapse>
-          <div class="mt-2.5 prose prose-slate prose-sm">
+          <div class="mt-2.5 mb-1 prose prose-slate prose-sm">
             <post.Content />
           </div>
         </Collapse>
@@ -186,6 +186,7 @@ const coverAlt = hasCover
               <a
                 title="License"
                 href={`${f.repo}/blob/${repo.defaultBranch}/LICENSE`}
+                class="pointer-events-auto"
               >
                 <svg
                   class="size-3.5 fill-current shrink-0 inline"
@@ -251,7 +252,7 @@ const coverAlt = hasCover
       </div>
     </div>
 
-<!--
+    <!--
       封面揭盖动画 — 单图纯 CSS 方案 (translate 合成层)
       ───────────────────────────────────────────────────────────────
       单张图片 in-flow (static block, w-full h-auto)：自身撑出 expanded 列高 = 图片自然高，
@@ -266,9 +267,6 @@ const coverAlt = hasCover
         top:50% / h-full=100% 相对 column 高度，column 在 transition 期也在动画，
         百分比每帧重解析，复合求导在 p≈0.42 出现极值 → "先下移再回升"回弹。
         本方案 50% 相对元素自身高度 (transition 期不变)，H/2 是常量 → 单调无回弹。
-
-      渲染性能: translate 走合成层 (compositor thread)，不触发 layout/paint，
-                比 top (paint) 更省主线程 — 卡片 height 动画已占主线程做 layout。
 
       依赖: translate 属性 (C104+/F72+/S14.1+) · interpolate-size:allow-keywords (项目既有前提)
     -->
