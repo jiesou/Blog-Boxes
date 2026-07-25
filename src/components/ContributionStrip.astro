@@ -24,7 +24,8 @@ const counts = contributions.reduce(
   <div
     class="[writing-mode:vertical-rl] [text-orientation:mixed]
               text-lg uppercase tracking-widest font-light
-              pt-5 pr-3 pb-4 pl-3.5 border-r-2 border-base-content/30" >
+              pt-5 pr-3 pb-4 pl-3.5 border-r-2 border-base-content/30
+              max-lg:text-sm max-lg:p-2" >
     Contributions
     {(["issue", "pr", "review"] as const)
       .filter((k) => counts[k] > 0)
