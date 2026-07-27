@@ -70,6 +70,11 @@
     for (const img of card.querySelectorAll("img"))
       if (!img.complete) img.addEventListener("load", update, { once: true });
 
+    // Decryption may inject content via innerHTML without affecting card size
+    const content = card.querySelector("[data-encrypted]");
+    if (content)
+      new MutationObserver(update).observe(content, { childList: true, subtree: true });
+
     checkbox?.addEventListener("change", update);
     update();
   }
