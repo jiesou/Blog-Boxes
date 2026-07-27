@@ -2,6 +2,7 @@ export interface Post {
   frontmatter: Frontmatter;
   Content: new (...args: any[]) => any;
   rawContent: () => string;
+  compiledContent: () => Promise<string>;
 }
 
 export interface Frontmatter {
@@ -14,6 +15,7 @@ export interface Frontmatter {
   index_img?: string;
   betteruptime?: string;
   bilibili?: string;
+  secret?: boolean;
 }
 
 export type Status = "active" | "done" | "archived";

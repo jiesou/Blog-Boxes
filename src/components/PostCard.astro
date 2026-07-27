@@ -3,6 +3,7 @@ import IconLink from "./IconLink.astro";
 import Collapse from "./Collapse.astro";
 import BetteruptimeStatus from "./BetteruptimeStatus.astro";
 import type { Repo, Post } from "../types";
+import { makeSlug } from "../lib/posts";
 import Image from "astro/components/Image.astro";
 import { inferRemoteSize } from "astro:assets";
 
@@ -10,17 +11,12 @@ interface Props {
   post: Post;
   repo: Repo | null;
   idSuffix?: string;
+  bodyHtml?: string;
 }
 
-const { post, repo, idSuffix = "" } = Astro.props;
+const { post, repo, idSuffix = "", bodyHtml } = Astro.props;
 const f = post.frontmatter;
-const slug =
-  f.abbrlink && f.title
-    ? `${f.abbrlink}-${f.title
-        .toLowerCase()
-        .replace(/[^a-z0-9\u4e00-\u9fff]+/g, "-")
-        .replace(/^-+|-+$/g, "")}`
-    : f.abbrlink || "";
+const slug = makeSlug(f);
 const total = repo?.languages?.reduce((s, l) => s + l.bytes, 0) ?? 0;
 const langs =
   repo?.languages
@@ -116,8 +112,8 @@ if (hasCover)
       <!-- min-h-0 flex 超级重要 -->
       <div class="flex-1 min-h-0 flex">
         <Collapse>
-          <div class="mt-2.5 prose prose-slate prose-sm">
-            <post.Content />
+          <div class="mt-2.5 prose prose-slate prose-sm" data-encrypted={bodyHtml !== undefined ? slug : undefined}>
+            {bodyHtml !== undefined ? <Fragment set:html={bodyHtml} /> : <post.Content />}
           </div>
         </Collapse>
       </div>

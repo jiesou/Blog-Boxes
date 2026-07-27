@@ -1,0 +1,66 @@
+---
+import "../styles/global.css";
+import HeroSection from "../components/HeroSection.astro";
+import ContributionStrip from "../components/ContributionStrip.astro";
+import type { Contribution } from "../types";
+
+interface Props {
+  contributions: Contribution[];
+}
+
+const { contributions } = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Boxes - 杰出兽的小宇宙</title>
+    <meta name="description" content="jiechus' Boxes - 项目、贡献、服务" />
+    <meta name="author" content="Jiecs" />
+    <link rel="icon" href="/boxes/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="76x76" href="/boxes/favicon.ico" />
+    <meta property="og:title" content="Boxes - 杰出兽的小宇宙" />
+    <meta property="og:description" content="jiechus' Boxes - 项目、贡献、服务" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.jiecs.top/boxes/" />
+    <meta property="og:site_name" content="杰出兽的小宇宙" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="article:author" content="Jiecs" />
+    <meta name="twitter:card" content="summary_large_image" />
+  </head>
+  <body>
+    <div class="mx-auto max-w-450 lg:border-x-2 lg:border-base-content/30">
+      <HeroSection>
+        <ContributionStrip contributions={contributions} />
+      </HeroSection>
+      <slot />
+      <footer class="p-6 pb-16 text-center  text-base-content/40 font-code">
+        Made by
+        <span class="pl-0.5">&hearts;</span>
+        <span class="pl-2.5">|</span>
+        <a class="link link-hover hover:text-accent ml-2" href="https://github.com/jiesou/Blog-Boxes">View Source</a>
+      </footer>
+    </div>
+  </body>
+</html>
+
+<script is:inline>
+  function highlightHash() {
+    const hash = window.location.hash.slice(1);
+    const abbrlink = hash.split("-")[0];
+    if (!abbrlink) return;
+    const els = document.querySelectorAll(`[id^="${abbrlink}-"]`);
+    for (const el of els) {
+      if (el.offsetParent) {
+        el.scrollIntoView();
+        el.classList.add("highlight-flash");
+        return;
+      }
+    }
+  }
+
+  highlightHash();
+  window.addEventListener("hashchange", highlightHash);
+</script>
