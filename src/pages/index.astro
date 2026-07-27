@@ -132,20 +132,27 @@ const boxes = import.meta.glob("../../boxes/*.md", {
 }) as Record<string, Post>;
 const raw = Object.values(boxes);
 
-const results: { post: Post; repo: Repo | null }[] = await Promise.all(
+const results = await Promise.all(
   raw.map(async (p) => {
     const repo = p.frontmatter.repo ? parseRepo(p.frontmatter.repo) : null;
     const gh = repo ? await fetchGitHubRepo(repo) : null;
+    p.frontmatter.date = p.frontmatter.date ? new Date(p.frontmatter.date) : undefined;
     return { post: p, repo: gh };
   }),
 );
+
+const DAY_MS = 86_400_000;
+const ACTIVE_DAYS = 120;
+function ranking(post: Post): number {
+  const date = new Date(post.frontmatter.date ?? Date.now());
+  const bonus =
+    post.frontmatter.status === "active" ? ACTIVE_DAYS * DAY_MS : 0;
+  return date.getTime() + bonus;
+}
 const sorted = results.sort((a, b) => {
-  const da = a.post.frontmatter.date;
-  const db = b.post.frontmatter.date;
-  if (!da && !db) return 0;
-  if (!da) return 1;
-  if (!db) return -1;
-  return db.localeCompare(da);
+  const rankA = ranking(a.post);
+  const rankB = ranking(b.post);
+  return rankB - rankA;
 });
 
 const contributions = await fetchContributions("jiesou");
@@ -162,7 +169,10 @@ const contributions = await fetchContributions("jiesou");
     <link rel="icon" href="/boxes/favicon.ico" />
     <link rel="apple-touch-icon" sizes="76x76" href="/boxes/favicon.ico" />
     <meta property="og:title" content="Boxes - 杰出兽的小宇宙" />
-    <meta property="og:description" content="jiechus' Boxes - 项目、贡献、服务" />
+    <meta
+      property="og:description"
+      content="jiechus' Boxes - 项目、贡献、服务"
+    />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://www.jiecs.top/boxes/" />
     <meta property="og:site_name" content="杰出兽的小宇宙" />
@@ -176,11 +186,14 @@ const contributions = await fetchContributions("jiesou");
         <ContributionStrip contributions={contributions} />
       </HeroSection>
       <PostsSection items={sorted} />
-      <footer class="p-6 pb-16 text-center  text-base-content/40 font-code">
+      <footer class="p-6 pb-16 text-center text-base-content/40 font-code">
         Made by
         <span class="pl-0.5">&hearts;</span>
         <span class="pl-2.5">|</span>
-        <a class="link link-hover hover:text-accent ml-2" href="https://github.com/jiesou/Blog-Boxes">View Source</a>
+        <a
+          class="link link-hover hover:text-accent ml-2"
+          href="https://github.com/jiesou/Blog-Boxes">View Source</a
+        >
       </footer>
     </div>
   </body>

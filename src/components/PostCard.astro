@@ -27,6 +27,11 @@ const langs =
     .filter((l) => l.pct >= 1) ?? [];
 const primaryUrl = f.url || f.repo || f.bilibili || "";
 const hasCover = !!f.index_img;
+const dateStr = f.date
+  ? f.date.getUTCHours() + f.date.getUTCMinutes() + f.date.getUTCSeconds() === 0
+    ? f.date.toLocaleDateString("sv-SE")
+    : f.date.toLocaleString("sv-SE")
+  : "";
 const coverAlt = hasCover
   ? f
       .index_img!.split("/")
@@ -112,7 +117,7 @@ const coverAlt = hasCover
           </h2>
         )
       }
-      {f.date && <div class="mt-1.5">{f.date}</div>}
+      {dateStr && <div class="mt-1.5">{dateStr}</div>}
 
       <!-- min-h-0 flex 超级重要 -->
       <div class="flex-1 min-h-0 flex">

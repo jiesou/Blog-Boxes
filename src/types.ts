@@ -9,7 +9,7 @@ export interface Frontmatter {
   url?: string;
   repo?: string;
   status?: Status;
-  date?: string;
+  date?: Date;
   abbrlink?: string;
   index_img?: string;
   betteruptime?: string;
