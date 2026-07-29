@@ -24,7 +24,8 @@ const counts = contributions.reduce(
   <div
     class="[writing-mode:vertical-rl] [text-orientation:mixed]
               text-lg uppercase tracking-widest font-light
-              pt-5 pr-3 pb-4 pl-3.5 border-r-2 border-base-content/30" >
+              pt-5 pr-3 pb-4 pl-3.5 border-r-2 border-base-content/30
+              max-md:text-md max-md:p-2" >
     Contributions
     {(["issue", "pr", "review"] as const)
       .filter((k) => counts[k] > 0)
@@ -41,13 +42,14 @@ const counts = contributions.reduce(
         {[...contributions, ...contributions].map((c, i) => (
           <a
             class="group flex items-center gap-3 px-4 py-3
-                      text-sm font-code
-                      hover:bg-base-200 hover:text-accent hover:text-xl"
+                      text-sm font-code contrib-item
+                      hover:bg-base-200 hover:text-accent hover:text-xl
+                      data-[active]:bg-base-200 data-[active]:text-accent data-[active]:text-xl"
             href={c.url}
             title={c.kinds.join() + "#" + c.number}
           >
             <Image
-              class="w-8 h-8 rounded-full bg-white transition-all group-hover:size-12 ease-out"
+              class="w-8 h-8 rounded-full bg-white transition-all group-hover:size-12 group-data-[active]:size-12 ease-out"
               src={c.avatarUrl}
               alt={c.owner}
               width="64"
@@ -55,7 +57,7 @@ const counts = contributions.reduce(
               loading={i < 20 ? "eager" : "lazy"}
             />
             <span class="truncate min-w-0">
-              <span class="group-hover:font-bold">{c.owner}</span>/{c.repo}
+              <span class="group-hover:font-bold group-data-[active]:font-bold">{c.owner}</span>/{c.repo}
             </span>
             <span class="shrink-0 font-bold text-accent tabular-nums">
               #{c.number}
@@ -69,6 +71,24 @@ const counts = contributions.reduce(
     </div>
   </div>
 </div>
+
+<script>
+  if (matchMedia('(hover: none)').matches) {
+    document.addEventListener('click', (e) => {
+      const target = e.target;
+      if (!(target instanceof Element)) return;
+      const item = target.closest('.contrib-item');
+      if (!item) {
+        document.querySelectorAll('.contrib-item[data-active]').forEach(el => el.removeAttribute('data-active'));
+        return;
+      }
+      if (item.hasAttribute('data-active')) return;
+      e.preventDefault();
+      document.querySelectorAll('.contrib-item[data-active]').forEach(el => el.removeAttribute('data-active'));
+      item.setAttribute('data-active', '');
+    });
+  }
+</script>
 
 <style is:global>
   @keyframes contrib-scroll {
