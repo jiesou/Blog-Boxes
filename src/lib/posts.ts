@@ -136,17 +136,23 @@ export async function getSortedPosts(boxesGlob: Record<string, Post>) {
     raw.map(async (p) => {
       const repo = p.frontmatter.repo ? parseRepo(p.frontmatter.repo) : null;
       const gh = repo ? await fetchGitHubRepo(repo) : null;
+      p.frontmatter.date = p.frontmatter.date ? new Date(p.frontmatter.date) : undefined;
       return { post: p, repo: gh };
     }),
   );
 
+  const DAY_MS = 86_400_000;
+  const ACTIVE_DAYS = 120;
+  function ranking(post: Post): number {
+    const date = new Date(post.frontmatter.date ?? Date.now());
+    const bonus =
+      post.frontmatter.status === "active" ? ACTIVE_DAYS * DAY_MS : 0;
+    return date.getTime() + bonus;
+  }
   const allPosts = results.sort((a, b) => {
-    const da = a.post.frontmatter.date;
-    const db = b.post.frontmatter.date;
-    if (!da && !db) return 0;
-    if (!da) return 1;
-    if (!db) return -1;
-    return db.localeCompare(da);
+    const rankA = ranking(a.post);
+    const rankB = ranking(b.post);
+    return rankB - rankA;
   });
 
   const publicPosts = allPosts.filter((r) => !r.post.frontmatter.secret);

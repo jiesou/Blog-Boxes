@@ -5,7 +5,6 @@ import BetteruptimeStatus from "./BetteruptimeStatus.astro";
 import type { Repo, Post } from "../types";
 import { makeSlug } from "../lib/posts";
 import Image from "astro/components/Image.astro";
-import { inferRemoteSize } from "astro:assets";
 
 interface Props {
   post: Post;
@@ -24,28 +23,35 @@ const langs =
     .filter((l) => l.pct >= 1) ?? [];
 const primaryUrl = f.url || f.repo || f.bilibili || "";
 const hasCover = !!f.index_img;
+const dateStr = f.date
+  ? f.date.getUTCHours() + f.date.getUTCMinutes() + f.date.getUTCSeconds() === 0
+    ? f.date.toLocaleDateString("sv-SE")
+    : f.date.toLocaleString("sv-SE")
+  : "";
 const coverAlt = hasCover
   ? f
       .index_img!.split("/")
       .pop()!
       .replace(/\.[^.]+$/, "")
   : "";
-
-// build-time 拦截图片真实长宽比；失败时退回 1:1 (仅影响 collapsed 居中视觉)
-// 详细方案见下方封面块注释
-let coverRatio = 1;
-if (hasCover)
-  try {
-    const { width, height } = await inferRemoteSize(f.index_img!);
-    if (width && height) coverRatio = height / width;
-  } catch {}
 ---
 
 <style>
   .postcard-card {
     /* See: https://developer.chrome.com/docs/css-ui/animate-to-height-auto */
     interpolate-size: allow-keywords;
-    scroll-timeline: --card-scroll y;
+  }
+
+  /* 封面揭盖：collapsed 居中 (H/2 − 自身 1/2)；translate 走合成层，不触发布局/绘制；
+     仅 md: — 移动端图片在 footer 下方始终自然比例，不做位移 (详见下方封面块注释) */
+  @media (width >= 48rem) {
+    .cover-img {
+      translate: 0 calc(var(--spacing) * 75 / 2 - 50%);
+      transition: translate 0.5s var(--ease-in-out);
+    }
+    .postcard-card:has(:checked) .cover-img {
+      translate: 0 0;
+    }
   }
 
   /* 普通 border 边缘像素锯齿 */
@@ -66,12 +72,12 @@ if (hasCover)
     h-75 min-h-75 has-checked:h-max
     flex flex-col group relative
     transition-[height] ease-in-out duration-500
-    overflow-hidden ${hasCover ? "md:col-span-2" : ""}`}
+    overflow-hidden ${hasCover ? "md:col-span-2 max-md:h-auto max-md:min-h-0" : ""}`}
 >
-  <!-- Card 内容: 有图card始终 flex-row 2列 (左文字+右图) -->
-  <div class={`relative flex-1 min-h-0 flex flex-row max-md:flex-col`}>
-    <!-- 左列：文字 + footer -->
-    <div class="flex flex-col p-5 pb-2 flex-1 min-w-0">
+  <!-- Card 内容: 桌面 wrapper flex-row 2列 (左文字+右图)；移动端 contents 消失，子列直接进 article 的 flex-col -->
+  <div class={`relative flex-1 min-h-0 flex flex-row max-md:contents`}>
+    <!-- 左列：文字 + footer（移动端布局机制见下方封面块注释） -->
+    <div class={`flex flex-col p-5 pb-2 flex-1 min-w-0 max-md:min-h-0 ${hasCover ? "max-md:flex-none max-md:h-75 max-md:has-checked:h-max max-md:transition-[height] max-md:duration-500 max-md:ease-in-out" : ""}`}>
       {
         f.status && (
           <div class="flex items-baseline gap-2 font-code font-bold text-xs">
@@ -107,12 +113,12 @@ if (hasCover)
           </h2>
         )
       }
-      {f.date && <div class="mt-1.5">{f.date}</div>}
+      {dateStr && <div class="mt-1.5">{dateStr}</div>}
 
       <!-- min-h-0 flex 超级重要 -->
       <div class="flex-1 min-h-0 flex">
         <Collapse>
-          <div class="mt-2.5 prose prose-slate prose-sm" data-encrypted={bodyHtml !== undefined ? slug : undefined}>
+          <div class="mt-2.5 mb-1 prose prose-slate prose-sm" data-encrypted={bodyHtml !== undefined ? slug : undefined}>
             {bodyHtml !== undefined ? <Fragment set:html={bodyHtml} /> : <post.Content />}
           </div>
         </Collapse>
@@ -184,6 +190,7 @@ if (hasCover)
               <a
                 title="License"
                 href={`${f.repo}/blob/${repo.defaultBranch}/LICENSE`}
+                class="pointer-events-auto"
               >
                 <svg
                   class="size-3.5 fill-current shrink-0 inline"
@@ -249,61 +256,41 @@ if (hasCover)
       </div>
     </div>
 
-<!--
-      封面揭盖动画 — PostCard 单图纯 CSS 方案
+    <!--
+      封面揭盖动画 — 单图纯 CSS 方案 (translate 合成层)
       ───────────────────────────────────────────────────────────────
-      需求：收起居中 / 展开贴顶完整比例 / 展开动画"一气呵成"无回弹 / 纯 CSS 无 JS
+      单张图片 in-flow (static block, w-full h-auto)：自身撑出 expanded 列高 = 图片自然高，
+      又用 translate 在两常量端点间插值 (collapsed 居中 → 0)，单调无回弹。
 
-      原理：图片在右列做"门帘式揭盖"——card 的高度动画本身揭盖图片；
-            单张图片 in-flow (position: relative) 既撑出 expanded 态列高 = 图片自然高，
-            又用 top 在两个常量 length 端点间线性插值，不依赖正在动画的 column 高度，
-            故 transition 单调、无回弹。
+      居中 (无需知道图片高度):
+        translate: 0 calc(var(--spacing)*75/2 - 50%)
+          = H/2 (常量 length，下移半卡高) − 50% (translate 百分比相对元素自身高度，上移自身 1/2)
+          = (H − I_h)/2。H = var(--spacing)*75 (h-75 同源，collapsed 卡高常量)；I_h = 图片自然高 (运行时常量)。
 
-      结构：
-        column (relative overflow-hidden @container)
-          └── Image (position: relative, in-flow, top 切换 collapsed<->expanded)
+      端点必须用常量/自身百分比，不可用相对父的百分比:
+        top:50% / h-full=100% 相对 column 高度，column 在 transition 期也在动画，
+        百分比每帧重解析，复合求导在 p≈0.42 出现极值 → "先下移再回升"回弹。
+        本方案 50% 相对元素自身高度 (transition 期不变)，H/2 是常量 → 单调无回弹。
 
-      端点常量化 (核心):
-        column 宽不参与动画 → @container 暴露的 100cqi 在动画期间是常量
-        图片比例 build-time 由 inferRemoteSize() 取得 → coverRatio 常量
-        card 收起高度与 article 的 h-75 同源 = var(--spacing) * 75
-        → collapsed 态让图片垂直居中所需偏移 (H_c - I_h)/2
-                      = (var(--spacing) * 75 - 100cqi · coverRatio) / 2  (常量 length!)
+      依赖: translate 属性 (C104+/F72+/S14.1+) · interpolate-size:allow-keywords (项目既有前提)
 
-      为什么单图 h-auto 而非 h-full:
-        h-full=100% 相对父（column）高度，column 高度在 transition 期间也在动画，
-        百分比每帧重新解析，复合求导会出现"先下移再回升"的回弹轨迹。
-        h-auto 则图片高度 = 100cqi·coverRatio = 常量 length（不随 column 重新解析），
-        配合 position: relative 自身留在 flow 中撑出列高，无需额外 spacer。
-
-      为什么常量 length 而非 top:50%:
-        top:50% 相对 column 高度，column 高度随 transition 变。
-        y(t) = 0.5·(1-p)·(H(t)-I_h)，H(t) 与 (1-p) 同时增大/减小，
-        在 p≈0.42 处出现极值 → 经典的"图片先瞬移到下面再回到上面"症状。
-        改用 calc((18.75rem - 100cqi·coverRatio)/2) → 端点为常量 length，linear 单调。
-
-      兼容性：
-        @container / cqi                Chrome 105+ / Safari 16+ / Firefox 110+
-        inferRemoteSize                Astro 6 build-time API，无 client-side 负担
-        interpolate-size: allow-keywords Chrome 129+ — 已是项目既有前提 (card height 动画)
-        不支持时退化为瞬时切换，端点仍正确
+      移动端 (max-md)：
+        wrapper display:contents → 文字列/图片列直接参与 article 的 flex-col，图片位于 footer 下方
+        文字列：收起 h-75 固定 / 展开 h-max（500ms 过渡）；max-md:min-h-0 必须存在——
+          列方向 flex item 的自动最小高度 = min-content = prose 全文高
+          (Collapse inner h-full 在固有尺寸解析时退化为 auto)，否则文字列被内容撑出、
+          footer 与渐隐被 article overflow-hidden 硬裁切、展开按钮永不出现
+        图片：始终 w-full h-auto 自然比例，不随展开/收起变化；translate 居中仅 md: 生效 (见 style 块)
     -->
     {
       hasCover && (
-        <div
-          class="relative overflow-hidden flex-1 min-w-0
-                 @container"
-          style={`--cover-top-collapsed: calc((var(--spacing) * 75 - 100cqi * ${coverRatio}) / 2)`}
-        >
-          {/* 单图 in-flow：position: relative 自身撑出 expanded 列高；top 常量插值 */}
+        <div class="overflow-hidden flex-1 min-w-0">
+          {/* 单图 in-flow：static block 自身撑出 expanded 列高；translate 在 style 块定义 */}
           <Image
             inferSize
             src={f.index_img!}
             alt={coverAlt}
-            class="cover-img block relative w-full h-auto
-                   top-(--cover-top-collapsed) group-has-checked:top-0
-                   transition-[top] ease-in-out duration-500
-                   pointer-events-none select-none"
+            class="cover-img block w-full h-auto pointer-events-none select-none"
           />
         </div>
       )

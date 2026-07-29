@@ -22,7 +22,10 @@ const { contributions } = Astro.props;
     <link rel="icon" href="/boxes/favicon.ico" />
     <link rel="apple-touch-icon" sizes="76x76" href="/boxes/favicon.ico" />
     <meta property="og:title" content="Boxes - 杰出兽的小宇宙" />
-    <meta property="og:description" content="jiechus' Boxes - 项目、贡献、服务" />
+    <meta
+      property="og:description"
+      content="jiechus' Boxes - 项目、贡献、服务"
+    />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://www.jiecs.top/boxes/" />
     <meta property="og:site_name" content="杰出兽的小宇宙" />
@@ -36,11 +39,14 @@ const { contributions } = Astro.props;
         <ContributionStrip contributions={contributions} />
       </HeroSection>
       <slot />
-      <footer class="p-6 pb-16 text-center  text-base-content/40 font-code">
+      <footer class="p-6 pb-16 text-center text-base-content/40 font-code">
         Made by
         <span class="pl-0.5">&hearts;</span>
         <span class="pl-2.5">|</span>
-        <a class="link link-hover hover:text-accent ml-2" href="https://github.com/jiesou/Blog-Boxes">View Source</a>
+        <a
+          class="link link-hover hover:text-accent ml-2"
+          href="https://github.com/jiesou/Blog-Boxes">View Source</a
+        >
       </footer>
     </div>
   </body>
