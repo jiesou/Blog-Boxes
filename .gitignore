@@ -6,3 +6,4 @@ dist/
 .opencode/
 boxes
 **.bak
+scripts/test-results/
