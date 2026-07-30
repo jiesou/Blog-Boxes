@@ -3,6 +3,7 @@ export interface Post {
   Content: new (...args: any[]) => any;
   rawContent: () => string;
   compiledContent: () => Promise<string>;
+  repo?: Repo | null;
 }
 
 export interface Frontmatter {

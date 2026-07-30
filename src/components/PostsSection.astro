@@ -1,9 +1,9 @@
 ---
-import type { Post, Repo } from "../types";
+import type { Post } from "../types";
 import PostCard from "./PostCard.astro";
 
 interface Props {
-  items: { post: Post; repo: Repo | null; bodyHtml?: string }[];
+  items: Post[];
 }
 
 const { items } = Astro.props;
@@ -11,12 +11,8 @@ const { items } = Astro.props;
 
 <div class="p-10 max-md:p-6.5">
   <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 xl:gap-10 grid-flow-dense">
-    {items.map(({ post, repo, bodyHtml }) => (
-      <PostCard
-        post={post}
-        repo={repo}
-        bodyHtml={bodyHtml}
-      />
+    {items.map((post) => (
+      <PostCard post={post} />
     ))}
   </div>
 </div>

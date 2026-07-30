@@ -34,7 +34,7 @@ function ghFetch(url: string): Promise<Response> {
   return cachedFetch(url, GH_HEADERS);
 }
 
-async function fetchGitHubRepo(r: RepoInfo): Promise<Repo | null> {
+async function fetchGhRepo(r: RepoInfo): Promise<Repo | null> {
   try {
     const repoUrl = `https://api.github.com/repos/${r.owner}/${r.name}`;
     const repoRes = await ghFetch(repoUrl);
@@ -61,7 +61,7 @@ async function fetchGitHubRepo(r: RepoInfo): Promise<Repo | null> {
   }
 }
 
-async function fetchContributions(username: string): Promise<Contribution[]> {
+async function loadContributions(username: string): Promise<Contribution[]> {
   try {
     const queries: { q: string; kind: ContributionKind }[] = [
       { q: `author:${username}+is:pr`, kind: "pr" },
@@ -129,15 +129,18 @@ async function fetchContributions(username: string): Promise<Contribution[]> {
   }
 }
 
-export async function getSortedPosts(boxesGlob: Record<string, Post>) {
+export async function getContributions() {
+  return loadContributions("jiesou");
+}
+
+async function loadPosts(boxesGlob: Record<string, Post>) {
   const raw = Object.values(boxesGlob);
 
-  const results: { post: Post; repo: Repo | null }[] = await Promise.all(
+  await Promise.all(
     raw.map(async (p) => {
       const repo = p.frontmatter.repo ? parseRepo(p.frontmatter.repo) : null;
-      const gh = repo ? await fetchGitHubRepo(repo) : null;
+      p.repo = repo ? await fetchGhRepo(repo) : null;
       p.frontmatter.date = p.frontmatter.date ? new Date(p.frontmatter.date) : undefined;
-      return { post: p, repo: gh };
     }),
   );
 
@@ -149,15 +152,16 @@ export async function getSortedPosts(boxesGlob: Record<string, Post>) {
       post.frontmatter.status === "active" ? ACTIVE_DAYS * DAY_MS : 0;
     return date.getTime() + bonus;
   }
-  const allPosts = results.sort((a, b) => {
-    const rankA = ranking(a.post);
-    const rankB = ranking(b.post);
+  raw.sort((a, b) => {
+    const rankA = ranking(a);
+    const rankB = ranking(b);
     return rankB - rankA;
   });
 
-  const publicPosts = allPosts.filter((r) => !r.post.frontmatter.secret);
-  const secret = allPosts.filter((r) => r.post.frontmatter.secret);
-  const contributions = await fetchContributions("jiesou");
+  return raw;
+}
 
-  return { allPosts, publicPosts, secret, contributions };
+export async function getPosts() {
+  const boxesGlob = import.meta.glob("../../boxes/*.md", { eager: true }) as Record<string, Post>;
+  return loadPosts(boxesGlob);
 }

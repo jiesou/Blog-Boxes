@@ -1,12 +1,13 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import PostsSection from "../components/PostsSection.astro";
-import { getSortedPosts } from "../lib/posts";
+import { getPosts, getContributions } from "../lib/posts";
 
-const boxes = import.meta.glob("../../boxes/*.md", {
-  eager: true,
-}) as Record<string, any>;
-const { publicPosts, contributions } = await getSortedPosts(boxes);
+const [posts, contributions] = await Promise.all([
+  getPosts(),
+  getContributions(),
+]);
+const publicPosts = posts.filter((r) => !r.frontmatter.secret);
 ---
 
 <BaseLayout contributions={contributions}>

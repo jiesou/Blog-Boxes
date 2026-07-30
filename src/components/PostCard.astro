@@ -2,18 +2,18 @@
 import IconLink from "./IconLink.astro";
 import Collapse from "./Collapse.astro";
 import BetteruptimeStatus from "./BetteruptimeStatus.astro";
-import type { Repo, Post } from "../types";
+import type { Post } from "../types";
 import { makeSlug } from "../lib/posts";
 import Image from "astro/components/Image.astro";
 
 interface Props {
   post: Post;
-  repo: Repo | null;
   idSuffix?: string;
   bodyHtml?: string;
 }
 
-const { post, repo, idSuffix = "", bodyHtml } = Astro.props;
+const { post, idSuffix = "", bodyHtml } = Astro.props;
+const { repo } = post;
 const f = post.frontmatter;
 const slug = makeSlug(f);
 const total = repo?.languages?.reduce((s, l) => s + l.bytes, 0) ?? 0;
