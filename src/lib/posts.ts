@@ -134,13 +134,17 @@ export async function getContributions() {
 }
 
 async function loadPosts(boxesGlob: Record<string, Post>) {
-  const raw = Object.values(boxesGlob);
-
-  await Promise.all(
-    raw.map(async (p) => {
+  const raw = await Promise.all(
+    Object.values(boxesGlob).map(async (p) => {
       const repo = p.frontmatter.repo ? parseRepo(p.frontmatter.repo) : null;
-      p.repo = repo ? await fetchGhRepo(repo) : null;
-      p.frontmatter.date = p.frontmatter.date ? new Date(p.frontmatter.date) : undefined;
+      return {
+        ...p,
+        repo: repo ? await fetchGhRepo(repo) : null,
+        frontmatter: {
+          ...p.frontmatter,
+          date: p.frontmatter.date ? new Date(p.frontmatter.date) : undefined,
+        },
+      };
     }),
   );
 
